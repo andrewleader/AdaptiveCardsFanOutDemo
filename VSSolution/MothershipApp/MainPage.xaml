@@ -1,0 +1,93 @@
+﻿<Page
+    x:Class="MothershipApp.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MothershipApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:views="using:MothershipApp.Views"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="450"/>
+        </Grid.ColumnDefinitions>
+        
+        <!--Up next-->
+        <ListView
+            ItemsSource="{x:Bind MainViewModel.UpNextCards}"
+            SelectionMode="None"
+            IsHitTestVisible="False"
+            Padding="12,0">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <views:CardThumbnailView/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.Header>
+                <TextBlock
+                    Text="Up next"
+                    Style="{ThemeResource TitleTextBlockStyle}"
+                    Margin="12,24"/>
+            </ListView.Header>
+        </ListView>
+        
+        <!--Card-->
+        <ContentPresenter
+            Grid.Column="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Content="{x:Bind MainViewModel.CurrentCard, Mode=OneWay}">
+            <ContentPresenter.ContentTemplate>
+                <DataTemplate>
+                    <Border
+                        Background="#333333"
+                        Width="400"
+                        Child="{Binding CardFrameworkElement}">
+                    </Border>
+                </DataTemplate>
+            </ContentPresenter.ContentTemplate>
+            <ContentPresenter.ContentTransitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition FromVerticalOffset="-300" />
+                    <AddDeleteThemeTransition />
+                </TransitionCollection>
+            </ContentPresenter.ContentTransitions>
+        </ContentPresenter>
+
+        <!--Gallery-->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock
+                Text="Gallery"
+                Style="{ThemeResource TitleTextBlockStyle}"
+                Margin="24"/>
+
+            <GridView
+                x:Name="ListViewGallery"
+                SelectionMode="None"
+                ItemsSource="{x:Bind MainViewModel.GalleryCards}"
+                Grid.Row="1"
+                Margin="16,0,0,0">
+                <GridView.ItemTemplate>
+                    <DataTemplate>
+                        <views:CardThumbnailView
+                            Margin="6"/>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <controls:StaggeredPanel
+                            DesiredColumnWidth="180"/>
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+            </GridView>
+        </Grid>
+    </Grid>
+</Page>

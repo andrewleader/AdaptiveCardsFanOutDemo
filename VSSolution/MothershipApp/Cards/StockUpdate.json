@@ -1,0 +1,76 @@
+﻿{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "speak": "Microsoft stock is trading at $93.35 a share, which is up .32%",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "Microsoft Corp (NASDAQ: MSFT)",
+          "size": "medium",
+          "isSubtle": true
+        },
+        {
+          "type": "TextBlock",
+          "text": "April 13, 4:00 PM EST",
+          "isSubtle": true
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "spacing": "none",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "93.35",
+                  "size": "extraLarge"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "▲ 0.20 (0.32%)",
+                  "size": "small",
+                  "color": "good",
+                  "spacing": "none"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "FactSet",
+                  "facts": [
+                    {
+                      "title": "Open",
+                      "value": "93.15"
+                    },
+                    {
+                      "title": "High",
+                      "value": "94.18"
+                    },
+                    {
+                      "title": "Low",
+                      "value": "92.70"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

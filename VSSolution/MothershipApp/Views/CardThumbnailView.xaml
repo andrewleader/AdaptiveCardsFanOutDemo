@@ -1,0 +1,44 @@
+﻿<UserControl
+    x:Class="MothershipApp.Views.CardThumbnailView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MothershipApp.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            Text="{Binding Name}"
+            Margin="3"
+            Style="{ThemeResource BaseTextBlockStyle}"/>
+
+        <Border
+            x:Name="BorderContainer"
+            Grid.Row="1"
+            SizeChanged="BorderContainer_SizeChanged">
+            <Canvas x:Name="CardCanvas">
+                <Border
+                    x:Name="CardBorder"
+                    Background="#333333"
+                    IsHitTestVisible="False"
+                    SizeChanged="CardBorder_SizeChanged">
+                    <Border.RenderTransform>
+                        <ScaleTransform
+                            x:Name="CardScaleTransform"/>
+                    </Border.RenderTransform>
+                    <ContentControl
+                        x:Name="CardContentControl"
+                        Content="{Binding CardFrameworkElement}"/>
+                </Border>
+            </Canvas>
+        </Border>
+    </Grid>
+</UserControl>
