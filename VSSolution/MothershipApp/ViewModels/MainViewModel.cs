@@ -1,5 +1,6 @@
 ﻿using FanOutClassLibrary;
 using FanOutUwpClassLibrary.ViewModels;
+using MothershipApp.AppServices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -57,7 +58,7 @@ namespace MothershipApp.ViewModels
         {
             while (true)
             {
-                await Task.Delay(3000);
+                await Task.Delay(5000);
 
                 // Send current card
                 if (CurrentCard != null)
@@ -65,6 +66,9 @@ namespace MothershipApp.ViewModels
                     var cardToSend = CurrentCard;
                     CurrentCard = null;
                     await SendCardAsync(cardToSend);
+
+                    // And then wait a bit more so we don't instantly switch
+                    await Task.Delay(1000);
                 }
 
                 MoveToNextCard();
@@ -73,7 +77,7 @@ namespace MothershipApp.ViewModels
 
         private async Task SendCardAsync(CardViewModel card)
         {
-            await Task.Delay(1000);
+            await AppServiceHandler.SendCardToAllClientsAsync(card);
         }
 
         private void MoveToNextCard()
