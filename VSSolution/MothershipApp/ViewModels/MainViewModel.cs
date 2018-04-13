@@ -25,6 +25,8 @@ namespace MothershipApp.ViewModels
 
         public ObservableCollection<CardViewModel> GalleryCards { get; private set; } = new ObservableCollection<CardViewModel>();
 
+        public ClientsViewModel Clients { get; private set; } = ClientsViewModel.Current;
+
         public static async Task<MainViewModel> CreateAsync()
         {
             CardViewModel.HOST_CONFIG_JSON = await FileIO.ReadTextAsync(await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///HostConfigs/HostConfig.json")));

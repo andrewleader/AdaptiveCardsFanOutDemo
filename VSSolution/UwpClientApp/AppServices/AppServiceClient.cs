@@ -1,4 +1,5 @@
-﻿using FanOutUwpClassLibrary.ViewModels;
+﻿using FanOutUwpClassLibrary;
+using FanOutUwpClassLibrary.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,7 +86,7 @@ namespace UwpClientApp.AppServices
 
         private static void Connection_RequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
         {
-            var dontWait = CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, delegate
+            var dontWait = SimpleDispatcher.RunAsync(delegate
             {
                 if (args.Request.Message.ContainsKey("CardJson"))
                 {
