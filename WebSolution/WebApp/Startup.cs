@@ -62,18 +62,21 @@ namespace WebApp
 
                     if (context.Request.Path == "/wsMothership")
                     {
-                        AllMothershipsModel.CreateNewMothership(webSocket);
+                        var mothership = AllMothershipsModel.CreateNewMothership(webSocket);
+                        await mothership.RunReceiveLoopAsync();
                     }
                     else
                     {
                         string path = context.Request.Path.ToString();
                         string mothershipName = path.Substring("/wsClient/".Length).TrimEnd('/');
 
-                        if (AllMothershipsModel.TryCreateClient(webSocket, mothershipName) == null)
+                        var client = AllMothershipsModel.TryCreateClient(webSocket, mothershipName);
+                        if (client == null)
                         {
                             context.Response.StatusCode = 400;
                             return;
                         }
+                        await client.RunReceiveLoopAsync();
                     }
                 }
                 else
