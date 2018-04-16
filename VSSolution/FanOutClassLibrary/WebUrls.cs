@@ -6,7 +6,8 @@ namespace FanOutClassLibrary
 {
     public class WebUrls
     {
-        public const string BASE_URL = "http://localhost:60969/";
+        //public const string BASE_URL = "http://localhost:60969/";
+        public const string BASE_URL = "https://cardfanout.azurewebsites.net/";
 
         public static readonly string BASE_WS_URL = BASE_URL.Replace("http://", "ws://").Replace("https://", "wss://");
 
