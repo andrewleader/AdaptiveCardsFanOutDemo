@@ -19,8 +19,6 @@ namespace WebApp.Model
         {
             m_webSocket = webSocket;
             Name = name;
-
-            RunReceiveLoop();
         }
 
         public string Name { get; private set; }
@@ -42,7 +40,7 @@ namespace WebApp.Model
             catch { }
         }
 
-        private async void RunReceiveLoop()
+        public async Task RunReceiveLoopAsync()
         {
             var buffer = new byte[Startup.RECEIVE_BUFFER_SIZE];
 
