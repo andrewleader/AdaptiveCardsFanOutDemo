@@ -13,16 +13,7 @@ namespace MothershipApp.ViewModels
 {
     public class ClientViewModel : BindableBase
     {
-        private static int s_clientIdentifier = 1;
-
-        public string DisplayName { get; private set; } = (s_clientIdentifier++).ToString();
-
-        private AppServiceResponseStatus _responseStatus = AppServiceResponseStatus.Unknown;
-        public AppServiceResponseStatus ResponseStatus
-        {
-            get { return _responseStatus; }
-            set { SetProperty(ref _responseStatus, value); }
-        }
+        public readonly string DisplayName;
 
         private bool _isSending;
         public bool IsSending
@@ -31,36 +22,24 @@ namespace MothershipApp.ViewModels
             set { SetProperty(ref _isSending, value); }
         }
 
-        private AppServiceConnection _connection;
-        private BackgroundTaskDeferral _deferral;
-
-        public ClientViewModel(IBackgroundTaskInstance taskInstance, AppServiceConnection connection, BackgroundTaskDeferral deferral)
+        public ClientViewModel(string name)
         {
-            taskInstance.Canceled += Connection_Canceled;
-
-            _connection = connection;
-            _deferral = deferral;
+            DisplayName = name;
         }
 
-        private void Connection_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
+        public void HandleReceivedCard(Guid cardIdentifier)
         {
-            ClientsViewModel.Current.Clients.Remove(this);
-        }
-
-        public async Task SendCardToClientAsync(CardViewModel card)
-        {
-            try
+            if (m_currentCardSentToClient == cardIdentifier)
             {
-                IsSending = true;
-                var response = await _connection.SendMessageAsync(new ValueSet()
-                {
-                    { "CardJson", card.CardJson }
-                });
-                IsSending = false;
-
-                ResponseStatus = response.Status;
+                m_currentCardSentToClient = Guid.Empty;
             }
-            catch { }
+        }
+
+        private Guid m_currentCardSentToClient;
+
+        public void HandleCardSentToClient(Guid cardIdentifier)
+        {
+            m_currentCardSentToClient = cardIdentifier;
         }
     }
 }

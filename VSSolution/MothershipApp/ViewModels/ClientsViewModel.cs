@@ -1,4 +1,5 @@
-﻿using FanOutUwpClassLibrary.ViewModels;
+﻿using FanOutClassLibrary.Messages;
+using FanOutUwpClassLibrary.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,48 +18,36 @@ namespace MothershipApp.ViewModels
 
         public ObservableCollection<ClientViewModel> Clients { get; private set; } = new ObservableCollection<ClientViewModel>();
 
-        public async void HandleAppServiceConnection(IBackgroundTaskInstance taskInstance)
+        public void HandleClientConnected(MothershipClientConnectedMessage msg)
         {
-            try
-            {
-                var triggerDetails = taskInstance.TriggerDetails as AppServiceTriggerDetails;
-                if (triggerDetails == null)
-                {
-                    return;
-                }
-
-                var deferral = taskInstance.GetDeferral();
-
-                if (App.MainViewModel == null)
-                {
-                    await triggerDetails.AppServiceConnection.SendMessageAsync(new ValueSet()
-                    {
-                        { "Error", "Mothership app isn't launched." }
-                    });
-
-                    triggerDetails.AppServiceConnection.Dispose();
-                    deferral.Complete();
-                    return;
-                }
-
-                Clients.Add(new ClientViewModel(taskInstance, triggerDetails.AppServiceConnection, deferral));
-            }
-            catch { }
+            Clients.Add(new ClientViewModel(msg.ClientName));
         }
 
-        public Task SendCardToAllClientsAsync(CardViewModel card)
+        public void HandleClientDisconnected(MothershipClientDisconnectedMessage msg)
         {
-            var clients = Clients.ToList();
-
-            List<Task> results = new List<Task>();
-
-            foreach (var c in clients)
+            var c = FindClient(msg.ClientName);
+            if (c != null)
             {
-                results.Add(c.SendCardToClientAsync(card));
+                Clients.Remove(c);
             }
+        }
 
-            // Wait at most 2 seconds
-            return Task.Run(delegate { Task.WaitAll(results.ToArray(), 2000); });
+        public void HandleClientReceivedCard(MothershipClientReceivedCardMessage msg)
+        {
+            FindClient(msg.ClientName)?.HandleReceivedCard(msg.CardIdentifier);
+        }
+
+        public void HandleSentCardToClients(Guid cardIdentifier)
+        {
+            foreach (var c in Clients)
+            {
+                c.HandleCardSentToClient(cardIdentifier);
+            }
+        }
+
+        private ClientViewModel FindClient(string clientName)
+        {
+            return Clients.FirstOrDefault(i => i.DisplayName == clientName);
         }
     }
 }

@@ -1,4 +1,7 @@
 ﻿using FanOutClassLibrary;
+using FanOutClassLibrary.Messages;
+using FanOutDeviceClassLibrary;
+using FanOutUwpClassLibrary;
 using FanOutUwpClassLibrary.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -8,11 +11,56 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
+using Windows.UI.Popups;
 
 namespace MothershipApp.ViewModels
 {
     public class MainViewModel : BindableBase
     {
+        public MainViewModel(DeviceSocketConnection deviceSocketConnection)
+        {
+            m_deviceSocketConnection = deviceSocketConnection;
+            deviceSocketConnection.OnMessageReceived += DeviceSocketConnection_OnMessageReceived;
+            deviceSocketConnection.OnSocketClosed += DeviceSocketConnection_OnSocketClosed;
+            deviceSocketConnection.RunReceiveLoop();
+        }
+
+        private void DeviceSocketConnection_OnSocketClosed(object sender, EventArgs e)
+        {
+            var dontWait = SimpleDispatcher.RunAsync(delegate
+            {
+                var dontWait2 = new MessageDialog("Connection closed. Please close and re-open the app.").ShowAsync();
+            });
+        }
+
+        private void DeviceSocketConnection_OnMessageReceived(object sender, BaseMessage e)
+        {
+            var dontWait = SimpleDispatcher.RunAsync(delegate
+            {
+                OnMessageReceived(e);
+            });
+        }
+
+        private void OnMessageReceived(BaseMessage message)
+        {
+            if (message is MothershipNameAssignedMessage)
+            {
+                Name = (message as MothershipNameAssignedMessage).Name;
+            }
+
+            if (message is MothershipClientConnectedMessage)
+            {
+
+            }
+        }
+
+        private string m_name = "Connecting...";
+        public string Name
+        {
+            get { return m_name; }
+            set { SetProperty(ref m_name, value); }
+        }
+
         public ObservableCollection<CardViewModel> UpNextCards { get; private set; } = new ObservableCollection<CardViewModel>();
 
         private CardViewModel _currentCard;
@@ -26,17 +74,36 @@ namespace MothershipApp.ViewModels
 
         public ClientsViewModel Clients { get; private set; } = ClientsViewModel.Current;
 
-        public static async Task<MainViewModel> CreateAsync()
+        private DeviceSocketConnection m_deviceSocketConnection;
+
+        public static async Task<MainViewModel> CreateAsync(ConnectingToWebAppPage connectingPage)
         {
+            connectingPage.WriteLog("Loading host config...");
             CardViewModel.HOST_CONFIG_JSON = await FileIO.ReadTextAsync(await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///HostConfigs/HostConfig.json")));
 
-            var mainViewModel = new MainViewModel();
+            DeviceSocketConnection deviceSocketConnection;
+            try
+            {
+                connectingPage.WriteLog("Connecting to socket...");
+                deviceSocketConnection = await DeviceSocketConnection.CreateAsync(WebUrls.MOTHERSHIP_SOCKET_URL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to connect to the web server: " + WebUrls.MOTHERSHIP_SOCKET_URL + "\n\n" + ex.ToString());
+            }
 
+            connectingPage.WriteLog("Socket connected!");
+
+            var mainViewModel = new MainViewModel(deviceSocketConnection);
+
+            connectingPage.WriteLog("Getting cards folder...");
             var cardsFolder = await Package.Current.InstalledLocation.GetFolderAsync("Cards");
+            connectingPage.WriteLog("Enumerating cards...");
             foreach (var file in await cardsFolder.GetFilesAsync())
             {
                 if (file.FileType.ToLower().Equals(".json"))
                 {
+                    connectingPage.WriteLog("Loading card payload...");
                     mainViewModel.GalleryCards.Add(new CardViewModel()
                     {
                         Name = file.DisplayName,
@@ -50,6 +117,7 @@ namespace MothershipApp.ViewModels
             mainViewModel.MoveToNextCard();
 
             // Start the loop
+            connectingPage.WriteLog("Starting the card loop...");
             mainViewModel.CycleLoop();
 
             return mainViewModel;
@@ -66,7 +134,7 @@ namespace MothershipApp.ViewModels
                 {
                     var cardToSend = CurrentCard;
                     CurrentCard = null;
-                    await SendCardAsync(cardToSend);
+                    SendCardAsync(cardToSend);
 
                     // And then wait a bit more so we don't instantly switch
                     await Task.Delay(1000);
@@ -76,14 +144,18 @@ namespace MothershipApp.ViewModels
             }
         }
 
-        private async Task SendCardAsync(CardViewModel card)
+        private void SendCardAsync(CardViewModel card)
         {
-            await Clients.SendCardToAllClientsAsync(card);
+            m_deviceSocketConnection.Send(new MothershipSendCardMessage()
+            {
+                CardIdentifier = card.CardIdentifier,
+                CardJson = card.CardJson
+            });
         }
 
         private void MoveToNextCard()
         {
-            var card = UpNextCards.First().Clone();
+            var card = UpNextCards.First().Clone() as CardViewModel;
             UpNextCards.RemoveAt(0);
 
             CurrentCard = card;
@@ -106,7 +178,7 @@ namespace MothershipApp.ViewModels
         {
             var notInUpNextQueue = GalleryCards.Where(gc => !UpNextCards.Any(unc => unc.Equals(gc)) && (CurrentCard == null || !CurrentCard.Equals(gc))).ToArray();
 
-            return notInUpNextQueue[new Random().Next(0, notInUpNextQueue.Length)].Clone();
+            return notInUpNextQueue[new Random().Next(0, notInUpNextQueue.Length)].Clone() as CardViewModel;
         }
 
         public double CardWidth => App.CardWidth;

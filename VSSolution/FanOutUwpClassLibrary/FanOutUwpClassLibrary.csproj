@@ -106,8 +106,8 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="UwpExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleDispatcher.cs" />
     <Compile Include="ViewModels\CardViewModel.cs" />
     <EmbeddedResource Include="Properties\FanOutUwpClassLibrary.rd.xml" />
   </ItemGroup>
@@ -123,6 +123,10 @@
     <ProjectReference Include="..\FanOutClassLibrary\FanOutClassLibrary.csproj">
       <Project>{9679e44f-5af6-470f-84b0-4c7bdd44f8cb}</Project>
       <Name>FanOutClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FanOutDeviceClassLibrary\FanOutDeviceClassLibrary.csproj">
+      <Project>{6F4A3BA4-1362-455C-875D-F4DE4459E57C}</Project>
+      <Name>FanOutDeviceClassLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

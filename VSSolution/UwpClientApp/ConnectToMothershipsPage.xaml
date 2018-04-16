@@ -1,0 +1,39 @@
+﻿<Page
+    x:Class="UwpClientApp.ConnectToMothershipsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UwpClientApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <StackPanel x:Name="RefreshingContent" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock
+                Text="Refreshing motherships..."
+                Style="{ThemeResource TitleTextBlockStyle}"/>
+            <ProgressRing
+                IsActive="True"
+                Width="50"
+                Height="50"
+                Margin="0,12,0,0"/>
+        </StackPanel>
+
+        <ListView
+            x:Name="ListViewMotherships"
+            Header="Choose a mothership to connect to..."
+            SelectionMode="None"
+            IsItemClickEnabled="True"
+            ItemClick="ListViewMotherships_ItemClick">
+            <ListView.Footer>
+                <Button
+                    Content="Refresh"
+                    Click="Refresh_Click"
+                    HorizontalAlignment="Stretch"
+                    Margin="24"/>
+            </ListView.Footer>
+        </ListView>
+        
+    </Grid>
+</Page>

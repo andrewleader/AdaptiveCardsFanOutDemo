@@ -1,10 +1,11 @@
-﻿using System;
+﻿using FanOutDeviceClassLibrary;
+using FanOutUwpClassLibrary;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using UwpClientApp.AppServices;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -32,6 +33,7 @@ namespace UwpClientApp
         public App()
         {
             this.InitializeComponent();
+            UwpExtensions.Initialize();
             this.Suspending += OnSuspending;
         }
 
@@ -40,7 +42,7 @@ namespace UwpClientApp
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override async void OnLaunched(LaunchActivatedEventArgs e)
+        protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -69,24 +71,10 @@ namespace UwpClientApp
                     // When the navigation stack isn't restored navigate to the first page,
                     // configuring the new page by passing required information as a navigation
                     // parameter
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    rootFrame.Navigate(typeof(ConnectToMothershipsPage));
                 }
                 // Ensure the current window is active
                 Window.Current.Activate();
-            }
-
-            var dontWait = AttemptToConnectAsync();
-        }
-
-        private async Task AttemptToConnectAsync()
-        {
-            try
-            {
-                await AppServiceClient.DiscoverAsync();
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.ToString()).ShowAsync();
             }
         }
 
@@ -107,9 +95,10 @@ namespace UwpClientApp
         /// </summary>
         /// <param name="sender">The source of the suspend request.</param>
         /// <param name="e">Details about the suspend request.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
+            await DeviceSocketConnection.CloseAnySocketAsync();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }

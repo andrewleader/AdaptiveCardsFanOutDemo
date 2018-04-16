@@ -95,7 +95,12 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AppServices\AppServiceClient.cs" />
+    <Compile Include="ConnectingPage.xaml.cs">
+      <DependentUpon>ConnectingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ConnectToMothershipsPage.xaml.cs">
+      <DependentUpon>ConnectToMothershipsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -123,6 +128,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="ConnectingPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ConnectToMothershipsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -137,6 +150,14 @@
     <ProjectReference Include="..\FanOutClassLibrary\FanOutClassLibrary.csproj">
       <Project>{9679e44f-5af6-470f-84b0-4c7bdd44f8cb}</Project>
       <Name>FanOutClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FanOutDeviceClassLibrary\FanOutDeviceClassLibrary.csproj">
+      <Project>{6f4a3ba4-1362-455c-875d-f4de4459e57c}</Project>
+      <Name>FanOutDeviceClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FanOutDeviceClientClassLibrary\FanOutDeviceClientClassLibrary.csproj">
+      <Project>{ad220aa7-94d9-4283-b662-31fd4cf41dd1}</Project>
+      <Name>FanOutDeviceClientClassLibrary</Name>
     </ProjectReference>
     <ProjectReference Include="..\FanOutUwpClassLibrary\FanOutUwpClassLibrary.csproj">
       <Project>{F8362971-C20C-4137-AF2B-FE97AEAD9CA5}</Project>

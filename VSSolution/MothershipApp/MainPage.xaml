@@ -15,7 +15,13 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="450"/>
         </Grid.ColumnDefinitions>
-        
+
+        <!--Name of  the mothership-->
+        <TextBlock
+            Text="{x:Bind MainViewModel.Name, Mode=OneWay}"
+            Style="{ThemeResource CaptionTextBlockStyle}"
+            Margin="6,6,0,0"/>
+
         <!--Up next-->
         <ListView
             ItemsSource="{x:Bind MainViewModel.UpNextCards}"

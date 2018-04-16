@@ -1,5 +1,6 @@
 ﻿using AdaptiveCards.Rendering.Uwp;
 using FanOutClassLibrary;
+using FanOutDeviceClassLibrary.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,29 +10,9 @@ using Windows.UI.Xaml;
 
 namespace FanOutUwpClassLibrary.ViewModels
 {
-    public class CardViewModel : BindableBase, IEquatable<CardViewModel>
+    public class CardViewModel : CrossPlatformCardViewModel
     {
         public static string HOST_CONFIG_JSON;
-
-        private string _name;
-        public string Name
-        {
-            get { return _name; }
-            set { SetProperty(ref _name, value); }
-        }
-
-        private string _cardJson;
-        public string CardJson
-        {
-            get { return _cardJson; }
-            set
-            {
-                if (SetProperty(ref _cardJson, value))
-                {
-                    Render();
-                }
-            }
-        }
 
         private FrameworkElement _cardFrameworkElement;
         public FrameworkElement CardFrameworkElement
@@ -40,7 +21,7 @@ namespace FanOutUwpClassLibrary.ViewModels
             private set { SetProperty(ref _cardFrameworkElement, value); }
         }
 
-        private void Render()
+        protected override void Render()
         {
             if (CardJson == null)
             {
@@ -65,20 +46,6 @@ namespace FanOutUwpClassLibrary.ViewModels
                 CardFrameworkElement = renderedCard.FrameworkElement;
             }
             catch { }
-        }
-
-        public CardViewModel Clone()
-        {
-            return new CardViewModel()
-            {
-                Name = Name,
-                CardJson = CardJson
-            };
-        }
-
-        public bool Equals(CardViewModel other)
-        {
-            return CardJson == other.CardJson;
         }
     }
 }

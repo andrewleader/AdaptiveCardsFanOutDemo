@@ -1,4 +1,6 @@
-﻿using MothershipApp.ViewModels;
+﻿using FanOutDeviceClassLibrary;
+using FanOutUwpClassLibrary;
+using MothershipApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +11,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.AppService;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -26,7 +29,7 @@ namespace MothershipApp
     {
         public const double CardWidth = 400;
 
-        public static MainViewModel MainViewModel { get; private set; }
+        public static MainViewModel MainViewModel { get; set; }
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -35,6 +38,7 @@ namespace MothershipApp
         public App()
         {
             this.InitializeComponent();
+            UwpExtensions.Initialize();
             this.Suspending += OnSuspending;
         }
 
@@ -48,7 +52,7 @@ namespace MothershipApp
             OnLaunchedOrActivated(e);
         }
 
-        private async void OnLaunchedOrActivated(IActivatedEventArgs e)
+        private void OnLaunchedOrActivated(IActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -68,9 +72,6 @@ namespace MothershipApp
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
-
-                // Create the main view model
-                MainViewModel = await MainViewModel.CreateAsync();
             }
 
             if (e is LaunchActivatedEventArgs && (e as LaunchActivatedEventArgs).PrelaunchActivated == false)
@@ -80,16 +81,11 @@ namespace MothershipApp
                     // When the navigation stack isn't restored navigate to the first page,
                     // configuring the new page by passing required information as a navigation
                     // parameter
-                    rootFrame.Navigate(typeof(MainPage));
+                    rootFrame.Navigate(typeof(ConnectingToWebAppPage));
                 }
                 // Ensure the current window is active
                 Window.Current.Activate();
             }
-        }
-
-        protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
-        {
-            MainViewModel.Clients.HandleAppServiceConnection(args.TaskInstance);
         }
 
         /// <summary>
@@ -109,9 +105,11 @@ namespace MothershipApp
         /// </summary>
         /// <param name="sender">The source of the suspend request.</param>
         /// <param name="e">Details about the suspend request.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
+
+            await DeviceSocketConnection.CloseAnySocketAsync();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
