@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FanOutClassLibrary\FanOutClassLibrary.csproj" />
+    <ProjectReference Include="..\..\VSSolution\FanOutClassLibrary\FanOutClassLibrary.csproj" />
   </ItemGroup>
 
 </Project>
