@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 
 namespace MothershipApp.ViewModels
 {
@@ -27,9 +28,10 @@ namespace MothershipApp.ViewModels
 
         private void DeviceSocketConnection_OnSocketClosed(object sender, EventArgs e)
         {
-            var dontWait = SimpleDispatcher.RunAsync(delegate
+            var dontWait = SimpleDispatcher.RunAsync(async delegate
             {
-                var dontWait2 = new MessageDialog("Connection closed. Please close and re-open the app.").ShowAsync();
+                await new MessageDialog("Connection closed. Please re-open the app.").ShowAsync();
+                Application.Current.Exit();
             });
         }
 

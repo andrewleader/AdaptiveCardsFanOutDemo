@@ -48,7 +48,7 @@ namespace FanOutDeviceClassLibrary
         {
             var buffer = new byte[WebUrls.RECEIVE_BUFFER_SIZE];
 
-            while (true)
+            while (m_webSocket != null)
             {
                 try
                 {
