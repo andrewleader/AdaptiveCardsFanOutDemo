@@ -32,6 +32,7 @@ namespace WebApp.Model
 
             newClient.StartConnection();
 
+            // Let the mothership know the client has connected
             Send(new MothershipClientConnectedMessage()
             {
                 ClientName = newClient.Name
