@@ -1,5 +1,4 @@
-﻿using MothershipApp.AppServices;
-using MothershipApp.ViewModels;
+﻿using MothershipApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -90,7 +89,7 @@ namespace MothershipApp
 
         protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
         {
-            AppServiceHandler.Handle(args.TaskInstance);
+            MainViewModel.Clients.HandleAppServiceConnection(args.TaskInstance);
         }
 
         /// <summary>

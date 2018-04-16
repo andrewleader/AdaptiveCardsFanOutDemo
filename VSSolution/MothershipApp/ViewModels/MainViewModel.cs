@@ -1,6 +1,5 @@
 ﻿using FanOutClassLibrary;
 using FanOutUwpClassLibrary.ViewModels;
-using MothershipApp.AppServices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -79,7 +78,7 @@ namespace MothershipApp.ViewModels
 
         private async Task SendCardAsync(CardViewModel card)
         {
-            await AppServiceHandler.SendCardToAllClientsAsync(card);
+            await Clients.SendCardToAllClientsAsync(card);
         }
 
         private void MoveToNextCard()
