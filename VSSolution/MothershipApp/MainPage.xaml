@@ -17,7 +17,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="65"/>
         </Grid.RowDefinitions>
 
         <!--Name of  the mothership-->
