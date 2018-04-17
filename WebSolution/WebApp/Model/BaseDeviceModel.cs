@@ -58,6 +58,11 @@ namespace WebApp.Model
                 {
                     var result = await m_webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
+                    if (!result.EndOfMessage)
+                    {
+                        throw new Exception("Multi-part message not supported");
+                    }
+
                     if (result.CloseStatus.HasValue)
                     {
                         CloseSocket();
