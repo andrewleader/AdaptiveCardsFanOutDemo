@@ -15,6 +15,7 @@
             Margin="6,6,0,0"/>
 
         <ListView
+            x:Name="ListViewCards"
             ItemsSource="{Binding Cards}">
             <ListView.ItemTemplate>
                 <DataTemplate>

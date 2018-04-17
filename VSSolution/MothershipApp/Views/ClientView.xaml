@@ -11,31 +11,21 @@
     Foreground="White">
 
     <Grid>
-        
-        <Rectangle
-            Fill="Green"
-            Visibility="{Binding IsReceived}"/>
 
         <Rectangle
-            Fill="#f2ba00"
-            Visibility="{Binding IsSending}"/>
+            Fill="{Binding BackgroundBrush}"/>
 
         <StackPanel Margin="6">
             <TextBlock
                 Text="{Binding DisplayName, Mode=OneTime, FallbackValue=[displayName]}"
+                TextWrapping="NoWrap"
                 Style="{ThemeResource CaptionTextBlockStyle}"
                 TextTrimming="CharacterEllipsis"
                 FontWeight="Bold"/>
 
             <TextBlock
-                Text="Sending..."
-                Visibility="{Binding IsSending}"
-                Style="{ThemeResource CaptionTextBlockStyle}"
-                Margin="0,6,0,0"/>
-
-            <TextBlock
-                Text="Received!"
-                Visibility="{Binding IsReceived}"
+                Text="{Binding Status}"
+                TextWrapping="NoWrap"
                 Style="{ThemeResource CaptionTextBlockStyle}"
                 Margin="0,6,0,0"/>
         </StackPanel>

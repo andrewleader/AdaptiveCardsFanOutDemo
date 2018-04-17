@@ -46,7 +46,6 @@ namespace WebApp.Model
             {
                 CloseSocket();
             }
-            catch { }
         }
 
         public async Task RunReceiveLoopAsync()

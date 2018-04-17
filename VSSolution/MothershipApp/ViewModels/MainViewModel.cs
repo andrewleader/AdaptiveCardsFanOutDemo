@@ -146,7 +146,7 @@ namespace MothershipApp.ViewModels
                 {
                     var cardToSend = CurrentCard;
                     CurrentCard = null;
-                    SendCardAsync(cardToSend);
+                    await SendCardAsync(cardToSend);
 
                     // And then wait a bit more so we don't instantly switch
                     await Task.Delay(1000);
@@ -156,15 +156,25 @@ namespace MothershipApp.ViewModels
             }
         }
 
-        private void SendCardAsync(CardViewModel card)
+        private async Task SendCardAsync(CardViewModel card)
         {
-            ClientsViewModel.Current.HandleSentCardToClients(card.CardIdentifier);
-
-            m_deviceSocketConnection.Send(new MothershipSendCardMessage()
+            try
             {
-                CardIdentifier = card.CardIdentifier,
-                CardJson = card.CardJson
-            });
+                Clients.HandleSendingCardToClients(card.CardIdentifier);
+
+                await m_deviceSocketConnection.SendAsync(new MothershipSendCardMessage()
+                {
+                    CardIdentifier = card.CardIdentifier,
+                    CardJson = card.CardJson
+                });
+
+                Clients.HandleSentCardToClients(card.CardIdentifier);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debugger.Break();
+                Clients.HandleSendFailed();
+            }
         }
 
         private void MoveToNextCard()

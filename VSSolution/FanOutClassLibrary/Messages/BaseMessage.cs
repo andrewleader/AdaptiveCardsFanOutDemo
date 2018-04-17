@@ -25,17 +25,26 @@ namespace FanOutClassLibrary.Messages
 
         public static BaseMessage FromJson(string json)
         {
-            JObject parsed = JObject.Parse(json);
-
-            if (parsed.TryGetValue("Type", out JToken typeValue))
+            try
             {
-                string typeName = typeValue.Value<string>() + "Message";
+                JObject parsed = JObject.Parse(json);
 
-                var matchedType = typeof(BaseMessage).Assembly.GetTypes().FirstOrDefault(i => i.FullName == "FanOutClassLibrary.Messages." + typeName);
-                if (matchedType != null)
+                if (parsed.TryGetValue("Type", out JToken typeValue))
                 {
-                    return (BaseMessage)JsonConvert.DeserializeObject(json, matchedType);
+                    string typeName = typeValue.Value<string>() + "Message";
+
+                    var matchedType = typeof(BaseMessage).Assembly.GetTypes().FirstOrDefault(i => i.FullName == "FanOutClassLibrary.Messages." + typeName);
+                    if (matchedType != null)
+                    {
+                        return (BaseMessage)JsonConvert.DeserializeObject(json, matchedType);
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                int jsonLength = json.Length;
+                System.Diagnostics.Debugger.Break();
+                throw;
             }
 
             return null;

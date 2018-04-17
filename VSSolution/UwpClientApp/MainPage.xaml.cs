@@ -1,4 +1,6 @@
-﻿using FanOutDeviceClientClassLibrary.ViewModels;
+﻿using FanOutDeviceClassLibrary.ViewModels;
+using FanOutDeviceClientClassLibrary.ViewModels;
+using FanOutUwpClassLibrary.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,6 +30,27 @@ namespace UwpClientApp
             this.InitializeComponent();
 
             DataContext = MainViewModel.Current;
+
+            MainViewModel.Current.OnCardReceived = OnCardReceived;
+        }
+
+        private void OnCardReceived(CrossPlatformCardViewModel card)
+        {
+            try
+            {
+                EventHandler<object> handler = null;
+                handler = delegate
+                {
+                    try
+                    {
+                        ListViewCards.ScrollIntoView(card);
+                        (card as CardViewModel).CardFrameworkElement.LayoutUpdated -= handler;
+                    }
+                    catch { }
+                };
+                (card as CardViewModel).CardFrameworkElement.LayoutUpdated += handler;
+            }
+            catch { }
         }
     }
 }

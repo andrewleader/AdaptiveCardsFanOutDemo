@@ -9,6 +9,8 @@ namespace FanOutDeviceClientClassLibrary.ViewModels
 {
     public class MainViewModel : BindableBase
     {
+        public Action<CrossPlatformCardViewModel> OnCardReceived;
+
         public static readonly MainViewModel Current = new MainViewModel();
 
         public ObservableCollection<CrossPlatformCardViewModel> Cards { get; private set; } = new ObservableCollection<CrossPlatformCardViewModel>();
@@ -26,6 +28,8 @@ namespace FanOutDeviceClientClassLibrary.ViewModels
         {
             Cards.Add(card);
             // TODO: Clean old cards
+
+            OnCardReceived?.Invoke(card);
         }
     }
 }

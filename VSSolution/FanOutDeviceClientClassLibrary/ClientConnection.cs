@@ -16,7 +16,7 @@ namespace FanOutDeviceClientClassLibrary
 
         private DeviceSocketConnection m_deviceSocketConnection;
 
-        public event EventHandler<string> OnConnectionClosed;
+        public Action<string> OnConnectionClosed;
         private Action m_onNameAssignedAction;
 
         public async Task ConnectAsync(string mothershipName, Action onNameAssignedAction)
@@ -38,7 +38,7 @@ namespace FanOutDeviceClientClassLibrary
             {
                 try
                 {
-                    OnConnectionClosed?.Invoke(this, "Socket closed");
+                    OnConnectionClosed?.Invoke("Socket closed");
                 }
                 catch { }
             });
@@ -68,7 +68,7 @@ namespace FanOutDeviceClientClassLibrary
 
                     else if (e is MothershipDisconnectedMessage)
                     {
-                        OnConnectionClosed?.Invoke(this, "Mothership has been disconnected");
+                        OnConnectionClosed?.Invoke("Mothership has been disconnected");
                     }
                 }
                 catch { }

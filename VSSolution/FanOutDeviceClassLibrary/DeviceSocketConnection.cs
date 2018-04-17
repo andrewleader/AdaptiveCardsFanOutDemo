@@ -24,16 +24,22 @@ namespace FanOutDeviceClassLibrary
         public static async Task<DeviceSocketConnection> CreateAsync(string url)
         {
             ClientWebSocket webSocket = new ClientWebSocket();
+            webSocket.Options.SetBuffer(WebUrls.RECEIVE_BUFFER_SIZE, WebUrls.RECEIVE_BUFFER_SIZE);
             await webSocket.ConnectAsync(new Uri(url), CancellationToken.None);
 
             return new DeviceSocketConnection(webSocket);
         }
 
-        public async void Send(BaseMessage message)
+        public async Task SendAsync(BaseMessage message)
         {
             try
             {
                 var bytes = Encoding.UTF8.GetBytes(message.ToJson());
+
+                if (bytes.Length > WebUrls.RECEIVE_BUFFER_SIZE)
+                {
+                    throw new Exception("Message too large");
+                }
 
                 await m_webSocket.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), WebSocketMessageType.Text, true, CancellationToken.None);
             }
@@ -41,7 +47,6 @@ namespace FanOutDeviceClassLibrary
             {
                 CloseSocket();
             }
-            catch { }
         }
 
         public async void RunReceiveLoop()
@@ -72,7 +77,6 @@ namespace FanOutDeviceClassLibrary
                 }
                 catch (Exception)
                 {
-
                 }
             }
         }

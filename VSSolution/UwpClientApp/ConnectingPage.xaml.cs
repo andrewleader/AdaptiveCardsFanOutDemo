@@ -35,6 +35,11 @@ namespace UwpClientApp
 
             try
             {
+                ClientConnection.Current.OnConnectionClosed = delegate
+                {
+                    Frame.Navigate(typeof(ConnectToMothershipsPage));
+                };
+
                 await ClientConnection.Current.ConnectAsync(mothershipName, delegate
                 {
                     Frame.Navigate(typeof(MainPage));
