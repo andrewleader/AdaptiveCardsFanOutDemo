@@ -2,6 +2,7 @@
 using FanOutClassLibrary.Messages;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -58,6 +59,7 @@ namespace FanOutDeviceClassLibrary
                 try
                 {
                     var result = await m_webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    Debug.WriteLine("Received message");
 
                     if (result.CloseStatus.HasValue)
                     {
@@ -75,8 +77,9 @@ namespace FanOutDeviceClassLibrary
                 {
                     CloseSocket();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Debug.WriteLine("Receive failed: " + ex.Message);
                 }
             }
         }

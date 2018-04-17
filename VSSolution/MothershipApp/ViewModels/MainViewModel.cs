@@ -6,6 +6,7 @@ using FanOutUwpClassLibrary.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,8 +68,14 @@ namespace MothershipApp.ViewModels
 
             else if (message is MothershipFailedToSendCardToClientMessage)
             {
-                System.Diagnostics.Debugger.Break();
+                Debugger.Break();
                 Clients.HandleSendFailed((message as MothershipFailedToSendCardToClientMessage).CardIdentifier);
+            }
+
+            else if (message is InvalidMessageReceivedMessage)
+            {
+                Debug.WriteLine("InvalidMessage: " + (message as InvalidMessageReceivedMessage).Error);
+                Clients.HandleSendFailed(m_lastSentCardIdentifier);
             }
         }
 
@@ -162,10 +169,12 @@ namespace MothershipApp.ViewModels
             }
         }
 
+        private Guid m_lastSentCardIdentifier;
         private async Task SendCardAsync(CardViewModel card)
         {
             try
             {
+                m_lastSentCardIdentifier = card.CardIdentifier;
                 Clients.HandleSendingCardToClients(card.CardIdentifier);
 
                 await m_deviceSocketConnection.SendAsync(new MothershipSendCardMessage()
@@ -179,7 +188,7 @@ namespace MothershipApp.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debugger.Break();
-                Clients.HandleSendFailed();
+                Clients.HandleSendFailed(card.CardIdentifier);
             }
         }
 
