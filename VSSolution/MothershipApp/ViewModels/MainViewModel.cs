@@ -187,6 +187,7 @@ namespace MothershipApp.ViewModels
             }
             catch (Exception ex)
             {
+                Debug.WriteLine("Send failed: " + ex.Message);
                 System.Diagnostics.Debugger.Break();
                 Clients.HandleSendFailed(card.CardIdentifier);
             }

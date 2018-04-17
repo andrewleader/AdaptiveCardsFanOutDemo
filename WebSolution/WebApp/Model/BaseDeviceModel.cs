@@ -56,20 +56,25 @@ namespace WebApp.Model
             {
                 try
                 {
-                    var result = await m_webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    string text = "";
 
-                    if (!result.EndOfMessage)
+                    while (true)
                     {
-                        throw new Exception("Multi-part message not supported");
-                    }
+                        var result = await m_webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
-                    if (result.CloseStatus.HasValue)
-                    {
-                        CloseSocket();
-                        return;
-                    }
+                        if (result.CloseStatus.HasValue)
+                        {
+                            CloseSocket();
+                            return;
+                        }
 
-                    string text = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                        text += Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+                        if (result.EndOfMessage)
+                        {
+                            break;
+                        }
+                    }
 
                     var message = BaseMessage.FromJson(text);
 
