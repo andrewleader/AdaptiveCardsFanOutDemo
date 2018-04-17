@@ -3,6 +3,7 @@ using FanOutClassLibrary.Messages;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -35,19 +36,35 @@ namespace FanOutDeviceClassLibrary
         {
             try
             {
-                var bytes = Encoding.UTF8.GetBytes(message.ToJson());
+                string json = message.ToJson();
+                var bytes = Encoding.UTF8.GetBytes(json);
 
                 if (bytes.Length > WebUrls.RECEIVE_BUFFER_SIZE)
                 {
                     throw new Exception("Message too large");
                 }
 
-                await m_webSocket.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                byte[][] chunks = BreakIntoChunks(bytes);
+                foreach (var chunk in chunks)
+                {
+                    await m_webSocket.SendAsync(new ArraySegment<byte>(chunk), WebSocketMessageType.Text, chunk == chunks.Last(), CancellationToken.None);
+                }
             }
             catch (WebSocketException)
             {
                 CloseSocket();
             }
+        }
+
+        private static byte[][] BreakIntoChunks(byte[] originalBytes)
+        {
+            List<byte[]> answer = new List<byte[]>();
+            int chunkSize = 4 * 1024;
+            for (int i = 0; i < originalBytes.Length; i += chunkSize)
+            {
+                answer.Add(originalBytes.Skip(i).Take(chunkSize).ToArray());
+            }
+            return answer.ToArray();
         }
 
         public async void RunReceiveLoop()
