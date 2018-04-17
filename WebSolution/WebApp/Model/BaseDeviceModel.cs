@@ -35,18 +35,57 @@ namespace WebApp.Model
             catch { }
         }
 
-        protected async Task SendAsync(BaseMessage message)
+        private Task _prevSendTask;
+        protected Task SendAsync(BaseMessage message)
         {
+            Task answer;
+            lock (this)
+            {
+                answer = SendAsyncHelper(message);
+                _prevSendTask = answer;
+            }
+            return answer;
+        }
+
+        private async Task SendAsyncHelper(BaseMessage message)
+        {
+            // Make sure we don't send interspersed
+            Task taskToWaitFor = _prevSendTask;
+
+            if (taskToWaitFor != null)
+            {
+                try
+                {
+                    await taskToWaitFor;
+                }
+                catch { }
+            }
+
             try
             {
                 var bytes = Encoding.UTF8.GetBytes(message.ToJson());
+                byte[][] chunks = BreakIntoChunks(bytes);
 
-                await m_webSocket.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                foreach (var chunk in chunks)
+                {
+                    await m_webSocket.SendAsync(new ArraySegment<byte>(chunk, 0, chunk.Length), WebSocketMessageType.Text, chunk == chunks.Last(), CancellationToken.None);
+                }
             }
             catch (WebSocketException)
             {
                 CloseSocket();
             }
+        }
+
+        private static byte[][] BreakIntoChunks(byte[] originalBytes)
+        {
+            List<byte[]> answer = new List<byte[]>();
+            int chunkSize = 4000;
+            for (int i = 0; i < originalBytes.Length; i += chunkSize)
+            {
+                answer.Add(originalBytes.Skip(i).Take(chunkSize).ToArray());
+            }
+            return answer.ToArray();
         }
 
         public async Task RunReceiveLoopAsync()
