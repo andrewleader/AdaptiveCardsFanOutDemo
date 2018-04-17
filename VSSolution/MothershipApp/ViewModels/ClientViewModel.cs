@@ -13,13 +13,18 @@ namespace MothershipApp.ViewModels
 {
     public class ClientViewModel : BindableBase
     {
-        public readonly string DisplayName;
+        public string DisplayName { get; private set; }
 
         private bool _isSending;
         public bool IsSending
         {
             get { return _isSending; }
-            set { SetProperty(ref _isSending, value); }
+            set { SetProperty(ref _isSending, value); NotifyPropertyChanged(nameof(IsReceived)); }
+        }
+
+        public bool IsReceived
+        {
+            get { return !IsSending; }
         }
 
         public ClientViewModel(string name)
@@ -32,6 +37,7 @@ namespace MothershipApp.ViewModels
             if (m_currentCardSentToClient == cardIdentifier)
             {
                 m_currentCardSentToClient = Guid.Empty;
+                IsSending = false;
             }
         }
 
@@ -40,6 +46,7 @@ namespace MothershipApp.ViewModels
         public void HandleCardSentToClient(Guid cardIdentifier)
         {
             m_currentCardSentToClient = cardIdentifier;
+            IsSending = true;
         }
     }
 }

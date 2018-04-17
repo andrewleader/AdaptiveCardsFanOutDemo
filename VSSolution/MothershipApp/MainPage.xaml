@@ -15,6 +15,10 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="450"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="65"/>
+        </Grid.RowDefinitions>
 
         <!--Name of  the mothership-->
         <TextBlock
@@ -95,5 +99,23 @@
                 </GridView.ItemsPanel>
             </GridView>
         </Grid>
+        
+        <!--Clients-->
+        <ListView
+            Grid.Row="1"
+            Grid.ColumnSpan="10"
+            ItemsSource="{x:Bind MainViewModel.Clients.Clients}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <views:ClientView Width="65" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+        </ListView>
+        
     </Grid>
 </Page>

@@ -25,9 +25,13 @@ namespace WebApp.Model
 
         public abstract void StartConnection();
 
-        protected void Send(BaseMessage message)
+        protected async void Send(BaseMessage message)
         {
-            var dontWait = SendAsync(message);
+            try
+            {
+                await SendAsync(message);
+            }
+            catch { }
         }
 
         protected async Task SendAsync(BaseMessage message)

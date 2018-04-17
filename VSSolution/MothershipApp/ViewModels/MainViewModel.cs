@@ -50,9 +50,19 @@ namespace MothershipApp.ViewModels
                 Name = (message as MothershipNameAssignedMessage).Name;
             }
 
-            if (message is MothershipClientConnectedMessage)
+            else if (message is MothershipClientConnectedMessage)
             {
+                Clients.HandleClientConnected(message as MothershipClientConnectedMessage);
+            }
 
+            else if (message is MothershipClientDisconnectedMessage)
+            {
+                Clients.HandleClientDisconnected(message as MothershipClientDisconnectedMessage);
+            }
+
+            else if (message is MothershipClientReceivedCardMessage)
+            {
+                Clients.HandleClientReceivedCard(message as MothershipClientReceivedCardMessage);
             }
         }
 
@@ -148,6 +158,8 @@ namespace MothershipApp.ViewModels
 
         private void SendCardAsync(CardViewModel card)
         {
+            ClientsViewModel.Current.HandleSentCardToClients(card.CardIdentifier);
+
             m_deviceSocketConnection.Send(new MothershipSendCardMessage()
             {
                 CardIdentifier = card.CardIdentifier,
