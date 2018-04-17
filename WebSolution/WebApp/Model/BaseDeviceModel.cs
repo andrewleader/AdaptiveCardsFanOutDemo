@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -54,10 +55,10 @@ namespace WebApp.Model
 
             while (m_webSocket != null)
             {
+                string text = "";
+
                 try
                 {
-                    string text = "";
-
                     while (true)
                     {
                         var result = await m_webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
@@ -86,9 +87,11 @@ namespace WebApp.Model
                 }
                 catch (Exception ex)
                 {
+                    Debug.WriteLine("InvalidMessage. Text: " + text);
                     Send(new InvalidMessageReceivedMessage()
                     {
-                        Error = ex.Message
+                        Error = ex.Message,
+                        TextLength = text.Length
                     });
                 }
             }
