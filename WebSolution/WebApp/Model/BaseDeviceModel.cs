@@ -87,7 +87,7 @@ namespace WebApp.Model
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("InvalidMessage. Text: " + text);
+                    Trace.TraceError("InvalidMessage. Text: " + text);
                     Send(new InvalidMessageReceivedMessage()
                     {
                         Error = ex.Message,
