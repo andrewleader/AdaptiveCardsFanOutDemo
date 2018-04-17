@@ -39,11 +39,6 @@ namespace FanOutDeviceClassLibrary
                 string json = message.ToJson();
                 var bytes = Encoding.UTF8.GetBytes(json);
 
-                if (bytes.Length > WebUrls.RECEIVE_BUFFER_SIZE)
-                {
-                    throw new Exception("Message too large");
-                }
-
                 byte[][] chunks = BreakIntoChunks(bytes);
                 foreach (var chunk in chunks)
                 {
@@ -59,7 +54,7 @@ namespace FanOutDeviceClassLibrary
         private static byte[][] BreakIntoChunks(byte[] originalBytes)
         {
             List<byte[]> answer = new List<byte[]>();
-            int chunkSize = 4 * 1024;
+            int chunkSize = 4000;
             for (int i = 0; i < originalBytes.Length; i += chunkSize)
             {
                 answer.Add(originalBytes.Skip(i).Take(chunkSize).ToArray());
@@ -73,18 +68,28 @@ namespace FanOutDeviceClassLibrary
 
             while (m_webSocket != null)
             {
+                string text = "";
+
                 try
                 {
-                    var result = await m_webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                    Debug.WriteLine("Received message");
-
-                    if (result.CloseStatus.HasValue)
+                    while (true)
                     {
-                        CloseSocket();
-                        return;
-                    }
+                        var result = await m_webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                        Debug.WriteLine("Received message");
 
-                    string text = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                        if (result.CloseStatus.HasValue)
+                        {
+                            CloseSocket();
+                            return;
+                        }
+
+                        text += Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+                        if (result.EndOfMessage)
+                        {
+                            break;
+                        }
+                    }
 
                     var message = BaseMessage.FromJson(text);
 
@@ -93,6 +98,7 @@ namespace FanOutDeviceClassLibrary
                 catch (WebSocketException ex)
                 {
                     CloseSocket();
+                    return;
                 }
                 catch (Exception ex)
                 {
