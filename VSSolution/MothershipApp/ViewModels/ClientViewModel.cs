@@ -50,10 +50,13 @@ namespace MothershipApp.ViewModels
             }
         }
 
-        public void HandleSendFailed()
+        public void HandleSendFailed(Guid cardIdentifier)
         {
-            Status = "FAILED";
-            BackgroundBrush = FailedBrush;
+            if (m_currentCardSentToClient == cardIdentifier)
+            {
+                Status = "FAILED";
+                BackgroundBrush = FailedBrush;
+            }
         }
 
         private Guid m_currentCardSentToClient;

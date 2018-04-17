@@ -121,6 +121,7 @@ namespace WebApp.Model
                     Send(new MothershipFailedToSendCardToClientMessage()
                     {
                         ClientName = client.Name,
+                        CardIdentifier = message.CardIdentifier,
                         ErrorText = ex.Message
                     });
                 }

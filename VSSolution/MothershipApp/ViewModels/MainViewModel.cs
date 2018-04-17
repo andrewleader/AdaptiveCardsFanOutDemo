@@ -64,6 +64,12 @@ namespace MothershipApp.ViewModels
             {
                 Clients.HandleClientReceivedCard(message as MothershipClientReceivedCardMessage);
             }
+
+            else if (message is MothershipFailedToSendCardToClientMessage)
+            {
+                System.Diagnostics.Debugger.Break();
+                Clients.HandleSendFailed((message as MothershipFailedToSendCardToClientMessage).CardIdentifier);
+            }
         }
 
         private string m_name = "Connecting...";

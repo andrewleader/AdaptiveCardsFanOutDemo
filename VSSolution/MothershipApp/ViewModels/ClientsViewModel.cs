@@ -53,11 +53,11 @@ namespace MothershipApp.ViewModels
             }
         }
 
-        public void HandleSendFailed()
+        public void HandleSendFailed(Guid cardIdentifier)
         {
             foreach (var c in Clients)
             {
-                c.HandleSendFailed();
+                c.HandleSendFailed(cardIdentifier);
             }
         }
 

@@ -8,6 +8,8 @@ namespace FanOutClassLibrary.Messages
     {
         public string ClientName { get; set; }
 
+        public Guid CardIdentifier { get; set; }
+
         public string ErrorText { get; set; }
     }
 }
