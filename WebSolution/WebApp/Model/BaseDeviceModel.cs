@@ -74,9 +74,12 @@ namespace WebApp.Model
                 {
                     CloseSocket();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    Send(new InvalidMessageReceivedMessage()
+                    {
+                        Error = ex.Message
+                    });
                 }
             }
         }
