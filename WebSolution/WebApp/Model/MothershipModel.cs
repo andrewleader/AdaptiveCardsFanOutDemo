@@ -15,7 +15,7 @@ namespace WebApp.Model
 
         public MothershipModel(WebSocket webSocket, string name) : base(webSocket, name)
         {
-            
+
         }
 
         public ClientModel TryCreateClient(WebSocket socket)
@@ -90,9 +90,26 @@ namespace WebApp.Model
             {
                 foreach (var c in Clients)
                 {
-                    c.SendCard(message);
+                    FanOutCardToClient(c, message);
                 }
             }
+        }
+
+        private async void FanOutCardToClient(ClientModel client, MothershipSendCardMessage message)
+        {
+            try
+            {
+                // Send it to the client
+                await client.SendCard(message);
+
+                // And then let the mothership know it was received
+                Send(new MothershipClientReceivedCardMessage()
+                {
+                    CardIdentifier = message.CardIdentifier,
+                    ClientName = client.Name
+                });
+            }
+            catch { }
         }
 
         protected override void OnSocketClosed()
