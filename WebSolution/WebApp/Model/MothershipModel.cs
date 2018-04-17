@@ -100,16 +100,32 @@ namespace WebApp.Model
             try
             {
                 // Send it to the client
-                await client.SendCard(message);
+                await client.SendCardAsync(message);
 
-                // And then let the mothership know it was received
-                Send(new MothershipClientReceivedCardMessage()
+                try
                 {
-                    CardIdentifier = message.CardIdentifier,
-                    ClientName = client.Name
-                });
+                    // And then let the mothership know it was received
+                    Send(new MothershipClientReceivedCardMessage()
+                    {
+                        CardIdentifier = message.CardIdentifier,
+                        ClientName = client.Name
+                    });
+                }
+                catch { }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                // Let mothership know it failed to send
+                try
+                {
+                    Send(new MothershipFailedToSendCardToClientMessage()
+                    {
+                        ClientName = client.Name,
+                        ErrorText = ex.Message
+                    });
+                }
+                catch { }
+            }
         }
 
         protected override void OnSocketClosed()

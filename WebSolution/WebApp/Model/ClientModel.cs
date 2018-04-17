@@ -16,7 +16,7 @@ namespace WebApp.Model
             Mothership = mothersip;
         }
 
-        public Task SendCard(MothershipSendCardMessage message)
+        public Task SendCardAsync(MothershipSendCardMessage message)
         {
             return SendAsync(message);
         }

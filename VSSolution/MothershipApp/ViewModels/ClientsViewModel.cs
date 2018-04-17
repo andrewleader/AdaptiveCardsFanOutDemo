@@ -45,6 +45,22 @@ namespace MothershipApp.ViewModels
             }
         }
 
+        public void HandleSendingCardToClients(Guid cardIdentifier)
+        {
+            foreach (var c in Clients)
+            {
+                c.HandleCardSendingToClient(cardIdentifier);
+            }
+        }
+
+        public void HandleSendFailed()
+        {
+            foreach (var c in Clients)
+            {
+                c.HandleSendFailed();
+            }
+        }
+
         private ClientViewModel FindClient(string clientName)
         {
             return Clients.FirstOrDefault(i => i.DisplayName == clientName);
