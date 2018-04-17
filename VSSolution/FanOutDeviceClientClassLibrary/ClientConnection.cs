@@ -17,9 +17,11 @@ namespace FanOutDeviceClientClassLibrary
         private DeviceSocketConnection m_deviceSocketConnection;
 
         public event EventHandler<string> OnConnectionClosed;
+        private Action m_onNameAssignedAction;
 
-        public async Task ConnectAsync(string mothershipName)
+        public async Task ConnectAsync(string mothershipName, Action onNameAssignedAction)
         {
+            m_onNameAssignedAction = onNameAssignedAction;
             m_deviceSocketConnection = await DeviceSocketConnection.CreateAsync(WebUrls.ClientSocketUrl(mothershipName));
             m_deviceSocketConnection.OnMessageReceived += M_deviceSocketConnection_OnMessageReceived;
             m_deviceSocketConnection.OnSocketClosed += M_deviceSocketConnection_OnSocketClosed;
@@ -56,6 +58,12 @@ namespace FanOutDeviceClientClassLibrary
                         card.CardJson = cardMessage.CardJson;
 
                         MainViewModel.Current.AddCard(card);
+                    }
+
+                    else if (e is ClientNameAssignedMessage)
+                    {
+                        MainViewModel.Current.Name = (e as ClientNameAssignedMessage).ClientName;
+                        m_onNameAssignedAction?.Invoke();
                     }
 
                     else if (e is MothershipDisconnectedMessage)

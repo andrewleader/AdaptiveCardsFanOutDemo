@@ -9,6 +9,11 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+        <TextBlock
+            Text="{Binding Name, FallbackValue=[name]}"
+            Style="{ThemeResource CaptionTextBlockStyle}"
+            Margin="6,6,0,0"/>
+
         <ListView
             ItemsSource="{Binding Cards}">
             <ListView.ItemTemplate>
