@@ -35,7 +35,10 @@ namespace UwpClientApp
 
             try
             {
-                await ClientConnection.Current.ConnectAsync(mothershipName);
+                await ClientConnection.Current.ConnectAsync(mothershipName, delegate
+                {
+                    Frame.Navigate(typeof(MainPage));
+                });
             }
             catch (Exception ex)
             {
