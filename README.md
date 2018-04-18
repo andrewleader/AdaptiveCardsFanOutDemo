@@ -61,7 +61,7 @@ When you receive this, grab the `ClientName` you were assigned and then display 
 
 When you receive this, display the card in the chat UI using the `CardJson`. You can ignore the `CardIdentifier`, it's currently not used in clients and probably won't ever be used.
 
-Note that **you must handle receiving MULTI-PART messages**. The max size sent is 4 KB, so payloads larger than that will be separated into multiple parts. Web sockets have an "End of message" flag that indicates whether the message is finished, or whether there's another message on its way.
+Note that **you must handle receiving MULTI-PART messages**. The max size sent is 4 KB (I tried increasing this, but for some reason when deployed to Azure it keeps limiting it down to 4 KB, couldn't figure it out after 2 hours of searching), so payloads larger than that will be separated into multiple parts. Web sockets have an "End of message" flag that indicates whether the message is finished, or whether there's another message on its way.
 
 ```json
 {
