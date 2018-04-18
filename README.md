@@ -2,6 +2,8 @@
 
 Demo that fans out cards from a mothership to clients.
 
+**Built applications available here:** `\\scratch2\scratch\anbare\AdaptiveCardsFanOut`
+
 
 ## How to build a client
 
