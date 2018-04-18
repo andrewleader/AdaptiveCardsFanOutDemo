@@ -110,6 +110,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="HostConfigs\HostConfig.json" />
     <None Include="UwpClientApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
