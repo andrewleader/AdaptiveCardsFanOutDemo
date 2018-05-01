@@ -1,4 +1,5 @@
 ﻿using FanOutDeviceClientClassLibrary;
+using FanOutUwpClassLibrary.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -40,8 +42,14 @@ namespace UwpClientApp
                     Frame.Navigate(typeof(ConnectToMothershipsPage));
                 };
 
-                await ClientConnection.Current.ConnectAsync(mothershipName, delegate
+                await ClientConnection.Current.ConnectAsync(mothershipName, async delegate
                 {
+                    try
+                    {
+                        CardViewModel.HOST_CONFIG_JSON = await FileIO.ReadTextAsync(await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///HostConfigs/HostConfig.json")));
+                    }
+                    catch { }
+
                     Frame.Navigate(typeof(MainPage));
                 });
             }

@@ -74,7 +74,7 @@ namespace MothershipApp.ViewModels
 
             else if (message is InvalidMessageReceivedMessage)
             {
-                Debug.WriteLine("InvalidMessage: " + (message as InvalidMessageReceivedMessage).Error);
+                Debug.WriteLine("InvalidMessage: " + (message as InvalidMessageReceivedMessage).Error + " TextLength: " + (message as InvalidMessageReceivedMessage).TextLength);
                 Clients.HandleSendFailed(m_lastSentCardIdentifier);
             }
         }

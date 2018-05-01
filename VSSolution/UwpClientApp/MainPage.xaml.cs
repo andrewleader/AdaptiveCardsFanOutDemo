@@ -36,21 +36,12 @@ namespace UwpClientApp
 
         private void OnCardReceived(CrossPlatformCardViewModel card)
         {
-            try
-            {
-                EventHandler<object> handler = null;
-                handler = delegate
-                {
-                    try
-                    {
-                        ListViewCards.ScrollIntoView(card);
-                        (card as CardViewModel).CardFrameworkElement.LayoutUpdated -= handler;
-                    }
-                    catch { }
-                };
-                (card as CardViewModel).CardFrameworkElement.LayoutUpdated += handler;
-            }
-            catch { }
+
+        }
+
+        private void ItemsControlCards_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            ScrollViewerCards.ChangeView(null, double.MaxValue, null, disableAnimation: false);
         }
     }
 }
