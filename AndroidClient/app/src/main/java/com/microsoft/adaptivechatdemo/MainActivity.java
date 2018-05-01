@@ -1,7 +1,9 @@
 package com.microsoft.adaptivechatdemo;
 
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,22 +35,24 @@ public class MainActivity extends AppCompatActivity {
     private static final int ITEM_ADDED = 1;
     private static final int ITEM_REMOVED = 2;
     private static final int MOTHERSHIPS_UPDATED = 3;
+    private static final int SOCKET_CLOSED = 4;
+    private static final int NAME_ASSIGNED = 5;
 
     private static int num = 0;
 
-    public void SendMotheshipsMessage(ArrayList<String> motherships)
+    public void SendMotheshipsMessage(ArrayList<CharSequence> motherships)
     {
-        //TODO: show a picker to the UI;
-
-        if (motherships.size() >= 1)
-        {
-            mConnection.EstablishWebSocketConnection(motherships.get(0));
-        }
-
         Message msg = new Message();
         msg.what = MOTHERSHIPS_UPDATED;
-        msg.obj = motherships;
+        msg.getData().putCharSequenceArray("motherships", motherships.toArray(new CharSequence[0]));
         mHandler.sendMessage(msg);
+    }
+
+    public void SendNamedAssigned(String name)
+    {
+        Message msg = new Message();
+        msg.what = NAME_ASSIGNED;
+        msg.getData().putString("Name", name );
     }
 
     public void SendReceivedAdaptiveCard(String jsonPayload)
@@ -71,13 +75,32 @@ public class MainActivity extends AppCompatActivity {
         mHandler.sendMessage(msg);
     }
 
-    static class ItemChanges extends Handler
+    public void SendSocketClosed() {
+        Message msg = new Message();
+        msg.what = SOCKET_CLOSED;
+        mHandler.sendMessage(msg);
+    }
+
+    class ItemChanges extends Handler
     {
 
         @Override
         public void handleMessage(Message msg)
         {
             switch(msg.what){
+                case (MOTHERSHIPS_UPDATED):
+                    AlertDialog.Builder b = new AlertDialog.Builder(MainActivity.this);
+                    b.setTitle("Choose a connection:");
+                    final CharSequence[] connections = (msg.getData().getCharSequenceArray("motherships"));
+                    b.setItems(connections, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            mConnection.EstablishWebSocketConnection(connections[which].toString());
+                        }
+                    });
+                    b.show();
+                    break;
                 case (ITEM_ADDED):
                     int num = msg.arg1;
                     mMessageAdapter.notifyItemInserted(num);
@@ -86,6 +109,12 @@ public class MainActivity extends AppCompatActivity {
                 case(ITEM_REMOVED):
                     int removed = msg.arg1;
                     mMessageAdapter.notifyItemRemoved(removed);
+                    break;
+                case(SOCKET_CLOSED):
+                    mConnection.enumerateMotherships();
+                    break;
+                case(NAME_ASSIGNED):
+                    //TODO: Display name
                     break;
             }
 
@@ -107,14 +136,14 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<CardMessage> list = new ArrayList<>();
 
-        button.setOnClickListener(new View.OnClickListener() {
+        /*button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mMessageAdapter.addNewSentMessage(mInput.getText().toString());
                 mInput.setText("");
                 mMessageAdapter.notifyItemInserted(mMessageAdapter.getItemCount()-1);
                 mMessageRecycler.smoothScrollToPosition(mMessageAdapter.getItemCount()-1);
             }
-        });
+        });*/
 
         mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, list, this.getSupportFragmentManager());
@@ -126,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         mMessageRecycler.setAdapter(mMessageAdapter);
 
         mConnection = new MotherShipConnection(this);
-        mConnection.EnumerateMotherships();
+        mConnection.enumerateMotherships();
     }
 
     @Override

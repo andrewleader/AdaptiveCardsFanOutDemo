@@ -31,7 +31,7 @@ public class MotherShipConnection {
         mUi = activity;
     }
 
-    public void EnumerateMotherships()
+    public void enumerateMotherships()
     {
         RequestQueue queue = Volley.newRequestQueue(mUi);
         String url ="https://cardfanout.azurewebsites.net/api/motherships";
@@ -44,7 +44,7 @@ public class MotherShipConnection {
                         // Display the first 500 characters of the response string.
                         if (response != null &&  response.length()>2) {
                             String sub = response.substring(1, response.length() - 1);
-                            ArrayList<String> list = new ArrayList<String>(Arrays.asList(sub.split(",")));
+                            ArrayList<CharSequence> list = new ArrayList<CharSequence>(Arrays.asList(sub.split(",")));
                             mUi.SendMotheshipsMessage(list);
                         }
                     }
@@ -79,10 +79,15 @@ public class MotherShipConnection {
             public void onMessage(WebSocket webSocket, String text) {
                 try {
                     JSONObject json = new JSONObject(text);
-                    if (json.getString("Type").compareTo("MothershipSendCard") == 0)
+                    String type = json.getString("Type");
+                    if (type.compareTo("MothershipSendCard") == 0)
                     {
-
                         mUi.SendReceivedAdaptiveCard(json.getString("CardJson"));
+                    }
+                    else if (type.compareTo("ClientNameAssigned") == 0)
+                    {
+                        String name = json.getString("ClientName");
+                        mUi.SendNamedAssigned(name);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -102,6 +107,7 @@ public class MotherShipConnection {
             @Override
             public void onClosed(WebSocket webSocket, int code, String reason) {
                 super.onClosed(webSocket, code, reason);
+                mUi.SendSocketClosed();
             }
 
             @Override
