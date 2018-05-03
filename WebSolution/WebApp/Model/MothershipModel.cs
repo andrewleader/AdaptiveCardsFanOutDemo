@@ -60,7 +60,9 @@ namespace WebApp.Model
             {
                 string newName = s_personNameGenerator.GenerateRandomFirstName();
 
-                if (!Clients.Any(i => i.Name == newName))
+                // Skip names that have spaces
+                // and skip names that are already in use
+                if (!newName.Contains(" ") && !Clients.Any(i => i.Name == newName))
                 {
                     return newName;
                 }
