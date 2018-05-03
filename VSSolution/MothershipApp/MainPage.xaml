@@ -7,11 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:views="using:MothershipApp.Views"
-    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls">
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:localControls="using:MothershipApp.Controls">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="450"/>
         </Grid.ColumnDefinitions>
@@ -25,51 +25,26 @@
             Text="{x:Bind MainViewModel.Name, Mode=OneWay}"
             Style="{ThemeResource CaptionTextBlockStyle}"
             Margin="6,6,0,0"/>
-
-        <!--Up next-->
+        
+        <!--Up next and current UI space-->
         <ListView
-            ItemsSource="{x:Bind MainViewModel.UpNextCards}"
+            ItemsSource="{x:Bind MainViewModel.QueuedAndCurrentCards}"
             SelectionMode="None"
-            IsHitTestVisible="False"
-            Padding="12,0">
+            IsHitTestVisible="False">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <views:CardThumbnailView/>
                 </DataTemplate>
             </ListView.ItemTemplate>
-            <ListView.Header>
-                <TextBlock
-                    Text="Up next"
-                    Style="{ThemeResource TitleTextBlockStyle}"
-                    Margin="12,24"/>
-            </ListView.Header>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <localControls:QueuedAndCurrentPanel />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
         </ListView>
-        
-        <!--Card-->
-        <ContentPresenter
-            Grid.Column="1"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Content="{x:Bind MainViewModel.CurrentCard, Mode=OneWay}">
-            <ContentPresenter.ContentTemplate>
-                <DataTemplate>
-                    <Border
-                        Background="#333333"
-                        Width="400"
-                        Child="{Binding CardFrameworkElement}">
-                    </Border>
-                </DataTemplate>
-            </ContentPresenter.ContentTemplate>
-            <ContentPresenter.ContentTransitions>
-                <TransitionCollection>
-                    <EntranceThemeTransition FromVerticalOffset="-300" />
-                    <AddDeleteThemeTransition />
-                </TransitionCollection>
-            </ContentPresenter.ContentTransitions>
-        </ContentPresenter>
 
         <!--Gallery-->
-        <Grid Grid.Column="2">
+        <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
