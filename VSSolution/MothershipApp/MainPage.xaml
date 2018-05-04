@@ -19,13 +19,49 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="65"/>
         </Grid.RowDefinitions>
+        
+        <!--JSON payload of current card-->
+        <ContentPresenter
+            Grid.RowSpan="50"
+            Content="{x:Bind MainViewModel.CurrentCard, Mode=OneWay}">
+            <ContentPresenter.ContentTemplate>
+                <DataTemplate>
+                    <TextBlock
+                        Text="{Binding CardJson}"
+                        FontFamily="Consolas"
+                        TextWrapping="Wrap"
+                        Foreground="White"
+                        HorizontalAlignment="Left"
+                        Margin="24,24,0,0"/>
+                </DataTemplate>
+            </ContentPresenter.ContentTemplate>
+            <ContentPresenter.ContentTransitions>
+                <TransitionCollection>
+                    <ContentThemeTransition VerticalOffset="-50" />
+                </TransitionCollection>
+            </ContentPresenter.ContentTransitions>
+        </ContentPresenter>
+        
+        <!--Transparency over the payload-->
+        <Border Grid.ColumnSpan="50" Grid.RowSpan="50">
+            <Border.Background>
+                <AcrylicBrush
+                    BackgroundSource="Backdrop"
+                    TintColor="Black"
+                    TintOpacity="0.8"
+                    Opacity="0.9"
+                    FallbackColor="#CC000000"/>
+            </Border.Background>
+        </Border>
 
         <!--Name of  the mothership-->
         <TextBlock
+            Grid.Column="1"
+            HorizontalAlignment="Right"
             Text="{x:Bind MainViewModel.Name, Mode=OneWay}"
             Style="{ThemeResource CaptionTextBlockStyle}"
-            Margin="6,6,0,0"/>
-        
+            Margin="0,6,6,0"/>
+
         <!--Up next and current UI space-->
         <ListView
             ItemsSource="{x:Bind MainViewModel.QueuedAndCurrentCards}"
