@@ -17,7 +17,7 @@ namespace WebApp.Model
         {
             lock (Motherships)
             {
-                string newName = GetNewName();
+                string newName = GetNewMothershipName();
 
                 var newMothership = new MothershipModel(socket, newName);
                 Motherships.Add(newMothership);
@@ -44,13 +44,15 @@ namespace WebApp.Model
             }
         }
 
-        private static string GetNewName()
+        private static string GetNewMothershipName()
         {
             while (true)
             {
                 string newName = s_placeNameGenerator.GenerateRandomPlaceName();
 
-                if (!Motherships.Any(i => i.Name == newName))
+                // Skip names that have spaces
+                // and skip names that are already in use
+                if (!newName.Contains(" ") && !Motherships.Any(i => i.Name == newName))
                 {
                     return newName;
                 }

@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
@@ -19,6 +20,13 @@ namespace MothershipApp.ViewModels
 {
     public class MainViewModel : BindableBase
     {
+        public class ChangingCardsArgs
+        {
+            public CardViewModel RemovedCard { get; set; }
+            public CardViewModel NewCurrentCard { get; set; }
+            public CardViewModel NewQueuedCard { get; set; }
+        }
+
         public MainViewModel(DeviceSocketConnection deviceSocketConnection)
         {
             m_deviceSocketConnection = deviceSocketConnection;
@@ -34,6 +42,23 @@ namespace MothershipApp.ViewModels
                 await new MessageDialog("Connection closed. Please re-open the app.").ShowAsync();
                 Application.Current.Exit();
             });
+        }
+
+        public void ShowUserSelectedCard(CardViewModel card)
+        {
+            // Clone to new instance
+            card = card.Clone() as CardViewModel;
+
+            if (QueuedAndCurrentCards.Count < 2)
+            {
+                QueuedAndCurrentCards.Insert(0, card);
+            }
+            else
+            {
+                QueuedAndCurrentCards[0] = card;
+            }
+
+            SendNextCardImmediately();
         }
 
         private void DeviceSocketConnection_OnMessageReceived(object sender, BaseMessage e)
@@ -86,14 +111,7 @@ namespace MothershipApp.ViewModels
             set { SetProperty(ref m_name, value); }
         }
 
-        public ObservableCollection<CardViewModel> UpNextCards { get; private set; } = new ObservableCollection<CardViewModel>();
-
-        private CardViewModel _currentCard;
-        public CardViewModel CurrentCard
-        {
-            get { return _currentCard; }
-            set { SetProperty(ref _currentCard, value); }
-        }
+        public ObservableCollection<CardViewModel> QueuedAndCurrentCards { get; private set; } = new ObservableCollection<CardViewModel>();
 
         public ObservableCollection<CardViewModel> GalleryCards { get; private set; } = new ObservableCollection<CardViewModel>();
 
@@ -137,9 +155,8 @@ namespace MothershipApp.ViewModels
                 }
             }
 
-            while (mainViewModel.AddUpNextCardIfNeeded()) { }
-
-            mainViewModel.MoveToNextCard();
+            mainViewModel.QueuedAndCurrentCards.Add(mainViewModel.FindNewCardFromGallery());
+            mainViewModel.QueuedAndCurrentCards.Add(mainViewModel.FindNewCardFromGallery());
 
             // Start the loop
             connectingPage.WriteLog("Starting the card loop...");
@@ -148,25 +165,45 @@ namespace MothershipApp.ViewModels
             return mainViewModel;
         }
 
+        private CancellationTokenSource m_cycleDelayCancellationTokenSource;
+
         private async void CycleLoop()
         {
             while (true)
             {
-                await Task.Delay(5000);
+                m_cycleDelayCancellationTokenSource = new CancellationTokenSource();
 
-                // Send current card
-                if (CurrentCard != null)
+                try
                 {
-                    var cardToSend = CurrentCard;
-                    CurrentCard = null;
-                    await SendCardAsync(cardToSend);
+                    await Task.Delay(5000, m_cycleDelayCancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException) { }
 
-                    // And then wait a bit more so we don't instantly switch
-                    await Task.Delay(1000);
+                // Add a new queued card if needed
+                if (QueuedAndCurrentCards.Count <= 2)
+                {
+                    QueuedAndCurrentCards.Insert(0, FindNewCardFromGallery());
                 }
 
-                MoveToNextCard();
+                // If we have enough cards
+                if (QueuedAndCurrentCards.Count >= 2)
+                {
+                    // Remove the current
+                    QueuedAndCurrentCards.Remove(QueuedAndCurrentCards.Last());
+
+                    // Grab the to-send one
+                    var toSend = QueuedAndCurrentCards.Last();
+
+                    // Send the new current
+                    await SendCardAsync(toSend);
+                }
             }
+        }
+
+        private void SendNextCardImmediately()
+        {
+            // Wait a little to let the UI update so that the send animation occurs
+            m_cycleDelayCancellationTokenSource?.CancelAfter(200);
         }
 
         private Guid m_lastSentCardIdentifier;
@@ -193,30 +230,9 @@ namespace MothershipApp.ViewModels
             }
         }
 
-        private void MoveToNextCard()
-        {
-            var card = UpNextCards.First().Clone() as CardViewModel;
-            UpNextCards.RemoveAt(0);
-
-            CurrentCard = card;
-
-            AddUpNextCardIfNeeded();
-        }
-
-        private bool AddUpNextCardIfNeeded()
-        {
-            if (UpNextCards.Count >= 5)
-            {
-                return false;
-            }
-
-            UpNextCards.Add(FindNewCardFromGallery());
-            return true;
-        }
-
         private CardViewModel FindNewCardFromGallery()
         {
-            var notInUpNextQueue = GalleryCards.Where(gc => !UpNextCards.Any(unc => unc.Equals(gc)) && (CurrentCard == null || !CurrentCard.Equals(gc))).ToArray();
+            var notInUpNextQueue = GalleryCards.Where(gc => !QueuedAndCurrentCards.Any(existing => existing.Equals(gc))).ToArray();
 
             return notInUpNextQueue[new Random().Next(0, notInUpNextQueue.Length)].Clone() as CardViewModel;
         }
