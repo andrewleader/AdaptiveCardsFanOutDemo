@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 case (ITEM_ADDED):
                     int num = msg.arg1;
                     mMessageAdapter.notifyItemInserted(num);
-                    mMessageRecycler.smoothScrollToPosition(num);
+                    mMessageRecycler.smoothScrollBy(0, Integer.MAX_VALUE);
                     break;
                 case(ITEM_REMOVED):
                     int removed = msg.arg1;
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         mMessageRecycler.setItemAnimator(new ScaleInBottomAnimator(new OvershootInterpolator(1f)));
-        mMessageRecycler.getItemAnimator().setAddDuration(1000);
+        mMessageRecycler.getItemAnimator().setAddDuration(100);
         mMessageRecycler.getItemAnimator().setMoveDuration(0);
         mMessageRecycler.setAdapter(mMessageAdapter);
 
