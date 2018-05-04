@@ -111,6 +111,13 @@ namespace MothershipApp.ViewModels
             set { SetProperty(ref m_name, value); }
         }
 
+        private CardViewModel m_currentCard;
+        public CardViewModel CurrentCard
+        {
+            get { return m_currentCard; }
+            set { SetProperty(ref m_currentCard, value); }
+        }
+
         public ObservableCollection<CardViewModel> QueuedAndCurrentCards { get; private set; } = new ObservableCollection<CardViewModel>();
 
         public ObservableCollection<CardViewModel> GalleryCards { get; private set; } = new ObservableCollection<CardViewModel>();
@@ -157,6 +164,7 @@ namespace MothershipApp.ViewModels
 
             mainViewModel.QueuedAndCurrentCards.Add(mainViewModel.FindNewCardFromGallery());
             mainViewModel.QueuedAndCurrentCards.Add(mainViewModel.FindNewCardFromGallery());
+            mainViewModel.CurrentCard = mainViewModel.QueuedAndCurrentCards.Last();
 
             // Start the loop
             connectingPage.WriteLog("Starting the card loop...");
@@ -193,6 +201,9 @@ namespace MothershipApp.ViewModels
 
                     // Grab the to-send one
                     var toSend = QueuedAndCurrentCards.Last();
+
+                    // Flag it as current
+                    CurrentCard = toSend;
 
                     // Send the new current
                     await SendCardAsync(toSend);

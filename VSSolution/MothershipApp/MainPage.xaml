@@ -10,7 +10,14 @@
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:localControls="using:MothershipApp.Controls">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
+        <Grid.Background>
+            <AcrylicBrush
+                BackgroundSource="HostBackdrop"
+                TintColor="Black"
+                TintOpacity="0.9"
+                FallbackColor="Black"/>
+        </Grid.Background>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="450"/>
@@ -19,13 +26,38 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="65"/>
         </Grid.RowDefinitions>
+        
+        <!--JSON payload of current card-->
+        <ContentPresenter
+            Grid.RowSpan="50"
+            Content="{x:Bind MainViewModel.CurrentCard, Mode=OneWay}"
+            Opacity="0.14">
+            <ContentPresenter.ContentTemplate>
+                <DataTemplate>
+                    <TextBlock
+                        Text="{Binding CardJson}"
+                        FontFamily="Consolas"
+                        TextWrapping="Wrap"
+                        Foreground="White"
+                        HorizontalAlignment="Left"
+                        Margin="24,24,0,0"/>
+                </DataTemplate>
+            </ContentPresenter.ContentTemplate>
+            <ContentPresenter.ContentTransitions>
+                <TransitionCollection>
+                    <ContentThemeTransition VerticalOffset="-50" />
+                </TransitionCollection>
+            </ContentPresenter.ContentTransitions>
+        </ContentPresenter>
 
         <!--Name of  the mothership-->
         <TextBlock
+            Grid.Column="1"
+            HorizontalAlignment="Right"
             Text="{x:Bind MainViewModel.Name, Mode=OneWay}"
             Style="{ThemeResource CaptionTextBlockStyle}"
-            Margin="6,6,0,0"/>
-        
+            Margin="0,6,6,0"/>
+
         <!--Up next and current UI space-->
         <ListView
             ItemsSource="{x:Bind MainViewModel.QueuedAndCurrentCards}"
@@ -44,7 +76,7 @@
         </ListView>
 
         <!--Gallery-->
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" Grid.RowSpan="50">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -61,7 +93,8 @@
                 IsItemClickEnabled="True"
                 ItemClick="ListViewGallery_ItemClick"
                 Grid.Row="1"
-                Margin="16,0,0,0">
+                Margin="16,0,0,0"
+                Padding="0,0,0,80">
                 <GridView.ItemTemplate>
                     <DataTemplate>
                         <views:CardThumbnailView
@@ -82,6 +115,13 @@
             Grid.Row="1"
             Grid.ColumnSpan="10"
             ItemsSource="{x:Bind MainViewModel.Clients.Clients}">
+            <ListView.Background>
+                <AcrylicBrush
+                    BackgroundSource="Backdrop"
+                    TintColor="Black"
+                    TintOpacity="0.6"
+                    FallbackColor="Black"/>
+            </ListView.Background>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <views:ClientView Width="65" />
