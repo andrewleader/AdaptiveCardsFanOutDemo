@@ -58,6 +58,8 @@
                 x:Name="ListViewGallery"
                 SelectionMode="None"
                 ItemsSource="{x:Bind MainViewModel.GalleryCards}"
+                IsItemClickEnabled="True"
+                ItemClick="ListViewGallery_ItemClick"
                 Grid.Row="1"
                 Margin="16,0,0,0">
                 <GridView.ItemTemplate>

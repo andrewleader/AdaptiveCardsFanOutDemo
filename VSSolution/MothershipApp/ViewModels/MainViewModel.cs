@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
@@ -41,6 +42,23 @@ namespace MothershipApp.ViewModels
                 await new MessageDialog("Connection closed. Please re-open the app.").ShowAsync();
                 Application.Current.Exit();
             });
+        }
+
+        public void ShowUserSelectedCard(CardViewModel card)
+        {
+            // Clone to new instance
+            card = card.Clone() as CardViewModel;
+
+            if (QueuedAndCurrentCards.Count < 2)
+            {
+                QueuedAndCurrentCards.Insert(0, card);
+            }
+            else
+            {
+                QueuedAndCurrentCards[0] = card;
+            }
+
+            SendNextCardImmediately();
         }
 
         private void DeviceSocketConnection_OnMessageReceived(object sender, BaseMessage e)
@@ -147,11 +165,19 @@ namespace MothershipApp.ViewModels
             return mainViewModel;
         }
 
+        private CancellationTokenSource m_cycleDelayCancellationTokenSource;
+
         private async void CycleLoop()
         {
             while (true)
             {
-                await Task.Delay(5000);
+                m_cycleDelayCancellationTokenSource = new CancellationTokenSource();
+
+                try
+                {
+                    await Task.Delay(5000, m_cycleDelayCancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException) { }
 
                 // Add a new queued card if needed
                 if (QueuedAndCurrentCards.Count <= 2)
@@ -172,6 +198,12 @@ namespace MothershipApp.ViewModels
                     await SendCardAsync(toSend);
                 }
             }
+        }
+
+        private void SendNextCardImmediately()
+        {
+            // Wait a little to let the UI update so that the send animation occurs
+            m_cycleDelayCancellationTokenSource?.CancelAfter(200);
         }
 
         private Guid m_lastSentCardIdentifier;
