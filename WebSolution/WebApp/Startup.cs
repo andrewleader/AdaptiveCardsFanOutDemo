@@ -48,6 +48,8 @@ namespace WebApp
                 ReceiveBufferSize = RECEIVE_BUFFER_SIZE
             });
 
+            CleanUpMothershipsLoop();
+
             app.Use(async (context, next) =>
             {
                 if (context.Request.Path == "/wsMothership" || context.Request.Path.ToString().StartsWith("/wsClient/"))
@@ -84,6 +86,35 @@ namespace WebApp
                     await next();
                 }
             });
+        }
+
+        private async void CleanUpMothershipsLoop()
+        {
+            while (true)
+            {
+                // Every 30 seconds, clean up any stale motherships
+                await Task.Delay(30000);
+
+                try
+                {
+                    MothershipModel[] motherships;
+                    lock (AllMothershipsModel.Motherships)
+                    {
+                        motherships = AllMothershipsModel.Motherships.ToArray();
+                    }
+
+                    foreach (var mothership in motherships)
+                    {
+                        // If haven't received a message in last 30 seconds
+                        if (mothership.LastTimeMessageReceived < DateTime.UtcNow.AddSeconds(-30))
+                        {
+                            mothership.CloseAndRemove();
+                            AllMothershipsModel.RemoveMothership(mothership);
+                        }
+                    }
+                }
+                catch { }
+            }
         }
     }
 }
