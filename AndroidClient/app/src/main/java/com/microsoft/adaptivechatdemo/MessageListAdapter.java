@@ -181,6 +181,11 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
     public void addNewSentMessage(String message)
     {
+        // Limit to at most 10 messages
+        while (mMessageList.size() > 9)
+        {
+            mMessageList.remove(0);
+        }
         CardMessage cardMessage = new CardMessage(message, Calendar.getInstance().getTimeInMillis());
         cardMessage.setReceived(false);
         mMessageList.add(cardMessage);
