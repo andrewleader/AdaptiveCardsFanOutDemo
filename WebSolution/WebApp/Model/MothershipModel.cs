@@ -24,7 +24,7 @@ namespace WebApp.Model
 
             lock (Clients)
             {
-                string newName = GetNewName();
+                string newName = GetNewClientName();
 
                 newClient = new ClientModel(socket, newName, this);
                 Clients.Add(newClient);
@@ -54,12 +54,13 @@ namespace WebApp.Model
             });
         }
 
-        private string GetNewName()
+        private string GetNewClientName()
         {
             while (true)
             {
                 string newName = s_personNameGenerator.GenerateRandomFirstName();
 
+                // Skip names that are already in use
                 if (!Clients.Any(i => i.Name == newName))
                 {
                     return newName;
