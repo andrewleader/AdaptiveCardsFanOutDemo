@@ -50,8 +50,8 @@
           "subtle": "#99E81123"
         },
         "good": {
-          "default": "#FF79AB3C",
-          "subtle": "#9979AB3C"
+          "default": "#FF00FF00",
+          "subtle": "#9900FF00"
         },
         "warning": {
           "default": "#FFFFF000",
@@ -83,8 +83,8 @@
           "subtle": "#99E81123"
         },
         "good": {
-          "default": "#FF79AB3C",
-          "subtle": "#9979AB3C"
+          "default": "#FF00FF00",
+          "subtle": "#9900FF00"
         },
         "warning": {
           "default": "#FFFFF000",

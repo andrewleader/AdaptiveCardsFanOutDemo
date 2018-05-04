@@ -76,11 +76,14 @@ namespace WebApp.Model
             });
         }
 
+        public DateTime LastTimeMessageReceived { get; private set; } = DateTime.UtcNow;
+
         protected override void OnMessageReceived(BaseMessage message)
         {
             // If mothership is requesting to send a card
             if (message is MothershipSendCardMessage)
             {
+                LastTimeMessageReceived = DateTime.UtcNow;
                 FanOutCard(message as MothershipSendCardMessage);
             }
         }
@@ -128,6 +131,11 @@ namespace WebApp.Model
                 }
                 catch { }
             }
+        }
+
+        public void CloseAndRemove()
+        {
+            CloseSocket();
         }
 
         protected override void OnSocketClosed()

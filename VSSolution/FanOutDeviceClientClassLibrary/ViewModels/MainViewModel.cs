@@ -26,8 +26,13 @@ namespace FanOutDeviceClientClassLibrary.ViewModels
 
         public void AddCard(CrossPlatformCardViewModel card)
         {
+            // Only display at most 15
+            while (Cards.Count > 14)
+            {
+                Cards.RemoveAt(0);
+            }
+
             Cards.Add(card);
-            // TODO: Clean old cards
 
             OnCardReceived?.Invoke(card);
         }
