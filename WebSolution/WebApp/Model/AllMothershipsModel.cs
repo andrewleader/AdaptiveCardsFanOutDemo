@@ -50,9 +50,9 @@ namespace WebApp.Model
             {
                 string newName = s_placeNameGenerator.GenerateRandomPlaceName();
 
-                // Skip names that have spaces
+                // Only allow names with just normal letters
                 // and skip names that are already in use
-                if (!newName.Contains(" ") && !Motherships.Any(i => i.Name == newName))
+                if (newName.All(c => Char.IsLetter(c)) && !Motherships.Any(i => i.Name == newName))
                 {
                     return newName;
                 }
