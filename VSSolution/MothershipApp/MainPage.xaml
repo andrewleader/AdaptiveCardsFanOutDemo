@@ -10,7 +10,14 @@
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:localControls="using:MothershipApp.Controls">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
+        <Grid.Background>
+            <AcrylicBrush
+                BackgroundSource="HostBackdrop"
+                TintColor="Black"
+                TintOpacity="0.9"
+                FallbackColor="Black"/>
+        </Grid.Background>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="450"/>
@@ -23,7 +30,8 @@
         <!--JSON payload of current card-->
         <ContentPresenter
             Grid.RowSpan="50"
-            Content="{x:Bind MainViewModel.CurrentCard, Mode=OneWay}">
+            Content="{x:Bind MainViewModel.CurrentCard, Mode=OneWay}"
+            Opacity="0.14">
             <ContentPresenter.ContentTemplate>
                 <DataTemplate>
                     <TextBlock
@@ -41,18 +49,6 @@
                 </TransitionCollection>
             </ContentPresenter.ContentTransitions>
         </ContentPresenter>
-        
-        <!--Transparency over the payload-->
-        <Border Grid.ColumnSpan="50" Grid.RowSpan="50">
-            <Border.Background>
-                <AcrylicBrush
-                    BackgroundSource="Backdrop"
-                    TintColor="Black"
-                    TintOpacity="0.8"
-                    Opacity="0.9"
-                    FallbackColor="#CC000000"/>
-            </Border.Background>
-        </Border>
 
         <!--Name of  the mothership-->
         <TextBlock
@@ -80,7 +76,7 @@
         </ListView>
 
         <!--Gallery-->
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" Grid.RowSpan="50">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -97,7 +93,8 @@
                 IsItemClickEnabled="True"
                 ItemClick="ListViewGallery_ItemClick"
                 Grid.Row="1"
-                Margin="16,0,0,0">
+                Margin="16,0,0,0"
+                Padding="0,0,0,80">
                 <GridView.ItemTemplate>
                     <DataTemplate>
                         <views:CardThumbnailView
@@ -118,6 +115,13 @@
             Grid.Row="1"
             Grid.ColumnSpan="10"
             ItemsSource="{x:Bind MainViewModel.Clients.Clients}">
+            <ListView.Background>
+                <AcrylicBrush
+                    BackgroundSource="Backdrop"
+                    TintColor="Black"
+                    TintOpacity="0.6"
+                    FallbackColor="Black"/>
+            </ListView.Background>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <views:ClientView Width="65" />
