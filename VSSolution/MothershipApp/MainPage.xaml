@@ -110,29 +110,45 @@
             </GridView>
         </Grid>
         
-        <!--Clients-->
-        <ListView
+        <!--Bottom bar-->
+        <Grid
             Grid.Row="1"
-            Grid.ColumnSpan="10"
-            ItemsSource="{x:Bind MainViewModel.Clients.Clients}">
-            <ListView.Background>
+            Grid.ColumnSpan="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.Background>
                 <AcrylicBrush
                     BackgroundSource="Backdrop"
                     TintColor="Black"
                     TintOpacity="0.6"
                     FallbackColor="Black"/>
-            </ListView.Background>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <views:ClientView Width="65" />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-        </ListView>
+            </Grid.Background>
+            
+            <!--Pause/resume button-->
+            <AppBarToggleButton
+                Icon="Play"
+                Label="Auto loop"
+                IsChecked="{x:Bind MainViewModel.AutoLoop, Mode=TwoWay}"
+                VerticalAlignment="Stretch"/>
+
+            <!--Clients-->
+            <ListView
+                Grid.Column="1"
+                ItemsSource="{x:Bind MainViewModel.Clients.Clients}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <views:ClientView Width="65" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
+        </Grid>
         
     </Grid>
 </Page>

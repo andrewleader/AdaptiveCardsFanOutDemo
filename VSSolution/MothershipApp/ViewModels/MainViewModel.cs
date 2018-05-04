@@ -20,19 +20,67 @@ namespace MothershipApp.ViewModels
 {
     public class MainViewModel : BindableBase
     {
-        public class ChangingCardsArgs
-        {
-            public CardViewModel RemovedCard { get; set; }
-            public CardViewModel NewCurrentCard { get; set; }
-            public CardViewModel NewQueuedCard { get; set; }
-        }
-
         public MainViewModel(DeviceSocketConnection deviceSocketConnection)
         {
             m_deviceSocketConnection = deviceSocketConnection;
             deviceSocketConnection.OnMessageReceived += DeviceSocketConnection_OnMessageReceived;
             deviceSocketConnection.OnSocketClosed += DeviceSocketConnection_OnSocketClosed;
             deviceSocketConnection.RunReceiveLoop();
+        }
+
+        private bool m_autoLoop = true;
+        public bool AutoLoop
+        {
+            get { return m_autoLoop; }
+            set
+            {
+                try
+                {
+                    if (m_autoLoop == value)
+                    {
+                        return;
+                    }
+
+                    SetProperty(ref m_autoLoop, value);
+
+                    // If became enabled
+                    if (value)
+                    {
+                        ReEnableLoop();
+                    }
+
+                    // Else if became disabled
+                    else
+                    {
+                        ReEnableLoopAfterLackOfInteraction();
+                    }
+                }
+                catch { }
+            }
+        }
+
+        private async void ReEnableLoop()
+        {
+            await RotateAndSendAsync();
+            CycleLoop();
+        }
+
+        private int m_reEnableId;
+        private async void ReEnableLoopAfterLackOfInteraction()
+        {
+            try
+            {
+                m_reEnableId++;
+                int thisId = m_reEnableId;
+
+                await Task.Delay(TimeSpan.FromMinutes(1.5));
+
+                if (thisId == m_reEnableId)
+                {
+                    AutoLoop = true;
+                }
+            }
+            catch { }
         }
 
         private void DeviceSocketConnection_OnSocketClosed(object sender, EventArgs e)
@@ -44,21 +92,30 @@ namespace MothershipApp.ViewModels
             });
         }
 
-        public void ShowUserSelectedCard(CardViewModel card)
+        public async void ShowUserSelectedCard(CardViewModel card)
         {
-            // Clone to new instance
-            card = card.Clone() as CardViewModel;
-
-            if (QueuedAndCurrentCards.Count < 2)
+            try
             {
-                QueuedAndCurrentCards.Insert(0, card);
-            }
-            else
-            {
-                QueuedAndCurrentCards[0] = card;
-            }
+                AutoLoop = false;
 
-            SendNextCardImmediately();
+                // Clone to new instance
+                card = card.Clone() as CardViewModel;
+
+                if (QueuedAndCurrentCards.Count < 2)
+                {
+                    QueuedAndCurrentCards.Insert(0, card);
+                }
+                else
+                {
+                    QueuedAndCurrentCards[0] = card;
+                }
+
+                // Wait a little so animation occurs
+                await Task.Delay(200);
+
+                await RotateAndSendAsync();
+            }
+            catch { }
         }
 
         private void DeviceSocketConnection_OnMessageReceived(object sender, BaseMessage e)
@@ -173,20 +230,33 @@ namespace MothershipApp.ViewModels
             return mainViewModel;
         }
 
-        private CancellationTokenSource m_cycleDelayCancellationTokenSource;
-
+        private int m_loopId = 0;
         private async void CycleLoop()
         {
+            m_loopId++;
+            int thisLoopId = m_loopId;
+
             while (true)
             {
-                m_cycleDelayCancellationTokenSource = new CancellationTokenSource();
-
                 try
                 {
-                    await Task.Delay(5000, m_cycleDelayCancellationTokenSource.Token);
+                    await Task.Delay(5000);
                 }
                 catch (OperationCanceledException) { }
 
+                if (!AutoLoop || m_loopId != thisLoopId)
+                {
+                    return;
+                }
+
+                await RotateAndSendAsync();
+            }
+        }
+
+        private async Task RotateAndSendAsync()
+        {
+            try
+            {
                 // Add a new queued card if needed
                 if (QueuedAndCurrentCards.Count <= 2)
                 {
@@ -209,12 +279,7 @@ namespace MothershipApp.ViewModels
                     await SendCardAsync(toSend);
                 }
             }
-        }
-
-        private void SendNextCardImmediately()
-        {
-            // Wait a little to let the UI update so that the send animation occurs
-            m_cycleDelayCancellationTokenSource?.CancelAfter(200);
+            catch { }
         }
 
         private Guid m_lastSentCardIdentifier;
