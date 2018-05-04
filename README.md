@@ -2,7 +2,15 @@
 
 Demo that fans out cards from a mothership to clients.
 
-**Built applications available here:** `\\scratch2\scratch\anbare\AdaptiveCardsFanOut`
+**Built applications available through AppCenter**
+
+## Updating/building website/apps
+
+* Update the live web server: [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/web-publish...master)
+* Build updated mothership: [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/appcenter-mothership...master)
+* Build updated UWP client: [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/appcenter-uwpclient...master)
+* Build updated Android client: [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/appcenter-droid...master)
+* Build updated iOS client: N/A, not on build server yet
 
 
 ## How to build a client

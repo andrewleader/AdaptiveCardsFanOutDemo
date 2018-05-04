@@ -33,5 +33,13 @@ namespace MothershipApp
         }
 
         public MainViewModel MainViewModel => App.MainViewModel;
+
+        private void ListViewGallery_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is CardViewModel card)
+            {
+                MainViewModel.ShowUserSelectedCard(card);
+            }
+        }
     }
 }
