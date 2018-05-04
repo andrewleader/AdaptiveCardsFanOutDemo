@@ -147,6 +147,15 @@ public class MainActivity extends AppCompatActivity {
 
         mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, list, this.getSupportFragmentManager());
+
+        // Scroll down when size of any of the cards changes (they can change as images load)
+        mMessageAdapter.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                mMessageRecycler.smoothScrollBy(0, Integer.MAX_VALUE);
+            }
+        });
+
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         mMessageRecycler.setItemAnimator(new ScaleInBottomAnimator(new OvershootInterpolator(1f)));

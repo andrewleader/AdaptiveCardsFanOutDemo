@@ -44,6 +44,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     private Context mContext;
     private FragmentManager mFragmentManager;
     private List<CardMessage> mMessageList;
+    private List<View.OnLayoutChangeListener> mLayoutChangeListeners;
 
     public HostConfig hostConfig;
 
@@ -176,6 +177,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         mFragmentManager = fragmentManager;
         mMessageList = new ArrayList<>();
         mMessageList = cards;
+        mLayoutChangeListeners = new ArrayList<>();
         hostConfig = HostConfig.DeserializeFromString(HOST_CONFIG);
     }
 
@@ -213,6 +215,12 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             // If some other user sent the message
             return VIEW_TYPE_MESSAGE_RECEIVED;
         }
+    }
+
+    public void addOnLayoutChangeListener(View.OnLayoutChangeListener listener) {
+
+        mLayoutChangeListeners.add(listener);
+
     }
 
     // Inflates the appropriate layout according to the ViewType.
@@ -347,6 +355,14 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             if (cardView == null) {
                 RenderedAdaptiveCard renderedCard = AdaptiveCardRenderer.getInstance().render(mContext, mFragmentManager, message.getAdaptiveCard(), this, hostConfig);
                 cardView = renderedCard.getView();
+                cardView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                        for (int i = 0; i < mLayoutChangeListeners.size(); i++) {
+                            mLayoutChangeListeners.get(i).onLayoutChange(v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom);
+                        }
+                    }
+                });
 
                 message.setCardView(cardView);
             }
