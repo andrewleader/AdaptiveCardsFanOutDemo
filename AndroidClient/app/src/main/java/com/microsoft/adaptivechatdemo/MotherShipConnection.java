@@ -25,6 +25,7 @@ import okio.ByteString;
 public class MotherShipConnection {
     private MainActivity mUi;
     private WebSocket mWebsocket;
+    public static String MOTHERSHIP_NAME = "John Doe";
 
     MotherShipConnection(MainActivity activity)
     {
@@ -63,7 +64,7 @@ public class MotherShipConnection {
 
     public void EstablishWebSocketConnection(String s) {
         OkHttpClient client = new OkHttpClient.Builder().readTimeout(0, TimeUnit.MILLISECONDS).build();
-        String removedQuotes = s.substring(1, s.length()-1);
+        final String removedQuotes = s.substring(1, s.length()-1);
         Request request = new Request.Builder()
                 .url("wss://cardfanout.azurewebsites.net/wsClient/"+removedQuotes)
                 .build();
@@ -73,6 +74,7 @@ public class MotherShipConnection {
             public void onOpen(WebSocket webSocket, okhttp3.Response response) {
 
                 super.onOpen(webSocket, response);
+                MOTHERSHIP_NAME = removedQuotes;
             }
 
             @Override

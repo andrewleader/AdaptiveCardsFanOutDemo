@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 case (ITEM_ADDED):
                     int num = msg.arg1;
                     mMessageAdapter.notifyItemInserted(num);
-                    mMessageRecycler.smoothScrollToPosition(num);
+                    mMessageRecycler.smoothScrollBy(0, Integer.MAX_VALUE);
                     break;
                 case(ITEM_REMOVED):
                     int removed = msg.arg1;
@@ -147,10 +147,19 @@ public class MainActivity extends AppCompatActivity {
 
         mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, list, this.getSupportFragmentManager());
+
+        // Scroll down when size of any of the cards changes (they can change as images load)
+        mMessageAdapter.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                mMessageRecycler.smoothScrollBy(0, Integer.MAX_VALUE);
+            }
+        });
+
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         mMessageRecycler.setItemAnimator(new ScaleInBottomAnimator(new OvershootInterpolator(1f)));
-        mMessageRecycler.getItemAnimator().setAddDuration(1000);
+        mMessageRecycler.getItemAnimator().setAddDuration(100);
         mMessageRecycler.getItemAnimator().setMoveDuration(0);
         mMessageRecycler.setAdapter(mMessageAdapter);
 

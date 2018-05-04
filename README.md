@@ -6,11 +6,13 @@ Demo that fans out cards from a mothership to clients.
 
 ## Updating/building website/apps
 
-* Update the live web server: [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/web-publish...master)
-* Build updated mothership: [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/appcenter-mothership...master)
-* Build updated UWP client: [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/appcenter-uwpclient...master)
-* Build updated Android client: [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/appcenter-droid...master)
-* Build updated iOS client: N/A, not on build server yet
+| Flavor | Submit build request | Build status |
+| -- | -- | -- |
+| Web server | [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/web-publish...master) |  |
+| Mothership | [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/appcenter-mothership...master) | [![Build status](https://build.appcenter.ms/v0.1/apps/131d5f14-6bec-48e1-bb28-6fb16ba6b1d2/branches/appcenter-mothership/badge)](https://appcenter.ms) |
+| UWP client | [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/appcenter-uwpclient...master) | [![Build status](https://build.appcenter.ms/v0.1/apps/e3247ffc-a923-4364-bc56-5152292a7f4c/branches/appcenter-uwpclient/badge)](https://appcenter.ms) |
+| Android client | [Submit pull request](https://github.com/anbare/AdaptiveCardsFanOutDemo/compare/appcenter-droid...master) | [![Build status](https://build.appcenter.ms/v0.1/apps/a18e1f95-c9e0-40d0-9579-559d476bd09e/branches/appcenter-droid/badge)](https://appcenter.ms) |
+| iOS client | N/A, not on build server yet | |
 
 
 ## How to build a client
