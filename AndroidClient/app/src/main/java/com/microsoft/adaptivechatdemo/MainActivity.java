@@ -158,9 +158,10 @@ public class MainActivity extends AppCompatActivity {
 
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
 
-        mMessageRecycler.setItemAnimator(new ScaleInBottomAnimator(new OvershootInterpolator(1f)));
-        mMessageRecycler.getItemAnimator().setAddDuration(100);
-        mMessageRecycler.getItemAnimator().setMoveDuration(0);
+        // Disabling animations since it makes things super slow
+        //mMessageRecycler.setItemAnimator(new ScaleInBottomAnimator(new OvershootInterpolator(1f)));
+        //mMessageRecycler.getItemAnimator().setAddDuration(100);
+        //mMessageRecycler.getItemAnimator().setMoveDuration(0);
         mMessageRecycler.setAdapter(mMessageAdapter);
 
         mConnection = new MotherShipConnection(this);
