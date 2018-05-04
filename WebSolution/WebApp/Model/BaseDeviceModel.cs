@@ -141,7 +141,7 @@ namespace WebApp.Model
             // Parents should implement
         }
 
-        private void CloseSocket()
+        protected void CloseSocket()
         {
             try
             {
