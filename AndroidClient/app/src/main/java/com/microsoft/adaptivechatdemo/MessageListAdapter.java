@@ -349,6 +349,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
             // Format the stored timestamp into a readable String using method.
             timeText.setText(DateUtils.formatDateTime(mContext, message.getCreatedAt(), DateUtils.FORMAT_SHOW_TIME));
+            nameText.setText(MotherShipConnection.MOTHERSHIP_NAME);
 
             View cardView = message.getCardView();
 
