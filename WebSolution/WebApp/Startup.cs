@@ -92,8 +92,9 @@ namespace WebApp
         {
             while (true)
             {
-                // Every 30 seconds, clean up any stale motherships
-                await Task.Delay(30000);
+                // Every 5 minutes, clean up any stale motherships
+                // Note that mothership will pause for up to 1.5 minutes
+                await Task.Delay(TimeSpan.FromMinutes(5));
 
                 try
                 {
