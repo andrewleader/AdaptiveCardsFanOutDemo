@@ -67,6 +67,11 @@ namespace WebApp
                         var mothership = AllMothershipsModel.CreateNewMothership(webSocket);
                         await mothership.RunReceiveLoopAsync();
                     }
+                    else if (context.Request.Path.ToString().StartsWith("/wsMothership/"))
+                    {
+                        var mothership = AllMothershipsModel.ReconnectMothership(webSocket, context.Request.Path.ToString().Substring("/wsMothership/".Length));
+                        await mothership.RunReceiveLoopAsync();
+                    }
                     else
                     {
                         string path = context.Request.Path.ToString();
@@ -106,10 +111,15 @@ namespace WebApp
 
                     foreach (var mothership in motherships)
                     {
-                        // If haven't received a message in last 30 seconds
-                        if (mothership.LastTimeMessageReceived < DateTime.UtcNow.AddSeconds(-30))
+                        // If haven't received a message in last 90 seconds
+                        if (mothership.LastTimeMessageReceived < DateTime.UtcNow.AddSeconds(-90))
                         {
                             mothership.CloseAndRemove();
+                        }
+
+                        // If has been disconnected for more than 2 minutes
+                        else if (mothership.DisconnectedTime != null && mothership.DisconnectedTime < DateTime.Now.AddMinutes(-2))
+                        {
                             AllMothershipsModel.RemoveMothership(mothership);
                         }
                     }

@@ -28,6 +28,31 @@ namespace WebApp.Model
             }
         }
 
+        public static MothershipModel ReconnectMothership(WebSocket socket, string mothershipName)
+        {
+            lock (Motherships)
+            {
+                var existing = Motherships.FirstOrDefault(i => i.Name == mothershipName);
+                if (existing != null)
+                {
+                    if (existing.DisconnectedTime != null)
+                    {
+                        existing.Reconnect(socket);
+
+                        return existing;
+                    }
+                    else
+                    {
+                        throw new Exception("Mothership wasn't disconnected");
+                    }
+                }
+                else
+                {
+                    throw new Exception("No existing mothership to reconnect to");
+                }
+            }
+        }
+
         public static string[] GetAllMothershipNames()
         {
             lock (Motherships)
