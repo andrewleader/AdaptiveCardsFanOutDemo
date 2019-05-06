@@ -85,11 +85,27 @@ namespace MothershipApp.ViewModels
 
         private void DeviceSocketConnection_OnSocketClosed(object sender, EventArgs e)
         {
-            var dontWait = SimpleDispatcher.RunAsync(async delegate
+            Reconnect();
+
+        }
+
+        private async void Reconnect()
+        {
+            try
             {
-                await new MessageDialog("Connection closed. Please re-open the app.").ShowAsync();
-                Application.Current.Exit();
-            });
+                m_deviceSocketConnection = await DeviceSocketConnection.CreateAsync(WebUrls.MOTHERSHIP_SOCKET_URL);
+                m_deviceSocketConnection.OnMessageReceived += DeviceSocketConnection_OnMessageReceived;
+                m_deviceSocketConnection.OnSocketClosed += DeviceSocketConnection_OnSocketClosed;
+                m_deviceSocketConnection.RunReceiveLoop();
+            }
+            catch {
+
+                var dontWait = SimpleDispatcher.RunAsync(async delegate
+                {
+                    await new MessageDialog("Connection closed. Please re-open the app.").ShowAsync();
+                    Application.Current.Exit();
+                });
+            }
         }
 
         public async void ShowUserSelectedCard(CardViewModel card)
