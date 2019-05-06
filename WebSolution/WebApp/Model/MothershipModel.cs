@@ -48,10 +48,20 @@ namespace WebApp.Model
                 Clients.Remove(client);
             }
 
-            Send(new MothershipClientDisconnectedMessage()
+            try
             {
-                ClientName = client.Name
-            });
+                Send(new MothershipClientDisconnectedMessage()
+                {
+                    ClientName = client.Name
+                });
+            }
+            catch { }
+
+            try
+            {
+                client.CloseSocket();
+            }
+            catch { }
         }
 
         private string GetNewClientName()
@@ -135,12 +145,23 @@ namespace WebApp.Model
 
         public void CloseAndRemove()
         {
+            CloseClients();
             CloseSocket();
         }
 
-        protected override void OnSocketClosed()
+        private void CloseClients()
         {
-            AllMothershipsModel.RemoveMothership(this);
+            lock (Clients)
+            {
+                foreach (var c in Clients.ToArray())
+                {
+                    try
+                    {
+                        RemoveClient(c);
+                    }
+                    catch { }
+                }
+            }
         }
     }
 }
