@@ -15,6 +15,7 @@ namespace WebApp.Model
     public abstract class BaseDeviceModel
     {
         private WebSocket m_webSocket;
+        public DateTime? DisconnectedTime { get; private set; }
 
         public BaseDeviceModel(WebSocket webSocket, string name)
         {
@@ -25,6 +26,12 @@ namespace WebApp.Model
         public string Name { get; private set; }
 
         public abstract void StartConnection();
+
+        public void Reconnect(WebSocket webSocket)
+        {
+            m_webSocket = webSocket;
+            DisconnectedTime = null;
+        }
 
         protected async void Send(BaseMessage message)
         {
@@ -141,7 +148,7 @@ namespace WebApp.Model
             // Parents should implement
         }
 
-        protected void CloseSocket()
+        public void CloseSocket()
         {
             try
             {
@@ -151,6 +158,7 @@ namespace WebApp.Model
                 }
                 catch { }
                 m_webSocket = null;
+                DisconnectedTime = DateTime.Now;
                 OnSocketClosed();
             }
             catch { }
